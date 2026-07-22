@@ -22,6 +22,7 @@ const UI = (function () {
     els.achievements = document.getElementById('achievements');
     els.achCount = document.getElementById('ach-count');
     els.toast = document.getElementById('toast');
+    els.frenzyBanner = document.getElementById('frenzy-banner');
 
     // Kazma: masaüstünde click, dokunmatikte touchstart (preventDefault ile
     // hem çift-dokun zoom'unu hem emüle edilen click'i engeller → çift saymaz).
@@ -93,6 +94,39 @@ const UI = (function () {
       r.icon.textContent = unlocked ? '🏅' : '🔒';
     }
     els.achCount.textContent = `(${done}/${ACHIEVEMENTS.length})`;
+  }
+
+  // Rastgele konumda tıklanabilir altın külçesi; tıklanınca ödül + toast,
+  // tıklanmazsa `lifetime` sonra kaybolur.
+  function spawnNugget() {
+    const el = document.createElement('button');
+    el.className = 'nugget';
+    el.textContent = '💰';
+    el.style.left = (8 + Math.random() * 78) + 'vw';
+    el.style.top = (22 + Math.random() * 55) + 'vh';
+    let done = false;
+    const claim = (e) => {
+      if (done) return;
+      done = true;
+      e.preventDefault();
+      const r = grantNugget();
+      if (r.type === 'gold') showToast(`💰 Altın külçesi! <b>+${formatNum(r.amount)}</b> altın`);
+      else showToast(`⚡ Altın Hücumu! Üretim <b>×${r.mult}</b> · ${r.dur}sn`);
+      el.remove();
+    };
+    el.addEventListener('click', claim);
+    el.addEventListener('touchstart', claim, { passive: false });
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), NUGGET.lifetime * 1000);
+  }
+
+  function syncFrenzy() {
+    if (game.frenzyLeft > 0) {
+      els.frenzyBanner.textContent = `⚡ Altın Hücumu ×${NUGGET.frenzyMult} · ${Math.ceil(game.frenzyLeft)}sn`;
+      els.frenzyBanner.classList.remove('hidden');
+    } else {
+      els.frenzyBanner.classList.add('hidden');
+    }
   }
 
   let toastTimer = null;
@@ -210,6 +244,7 @@ const UI = (function () {
     syncGenerators();
     syncUpgrades();
     syncPrestige();
+    syncFrenzy();
 
     const newly = checkAchievements();
     if (newly.length) {
@@ -229,5 +264,5 @@ const UI = (function () {
     els.offlinePopup.classList.remove('hidden');
   }
 
-  return { init, sync, flashSaved, showOffline };
+  return { init, sync, flashSaved, showOffline, spawnNugget };
 })();

@@ -9,6 +9,7 @@ function createState() {
     totalGold: 0,   // ömür boyu üretilen (prestij eğrisini besler, sıfırlanmaz)
     gems: 0,        // prestij parası (💎), kalıcı
     achievements: [], // açılan başarım id'leri (kalıcı)
+    frenzyLeft: 0,  // "Altın Hücumu" kalan süre (sn), geçici — kaydedilmez
     clicks: 0,
     gens,
     upgrades: [],   // satın alınan yükseltme id'leri
@@ -41,8 +42,22 @@ function getGenMult(genId) {
 function getPrestigeMult() { return 1 + game.gems * GEM_BONUS; }
 // Başarım çarpanı: açılan her başarım tüm üretime +ACH_BONUS.
 function getAchievementMult() { return 1 + game.achievements.length * ACH_BONUS; }
+// Altın Hücumu aktifken geçici üretim çarpanı.
+function getFrenzyMult() { return game.frenzyLeft > 0 ? NUGGET.frenzyMult : 1; }
 
-function getClickValue() { return BASE_CLICK * getClickMult() * getPrestigeMult() * getAchievementMult(); }
+function getClickValue() { return BASE_CLICK * getClickMult() * getPrestigeMult() * getAchievementMult() * getFrenzyMult(); }
+
+// Altın külçesine tıklanınca çağrılır: %50 toplu bonus altın, %50 Altın Hücumu.
+function grantNugget() {
+  if (Math.random() < 0.5) {
+    const bonus = Math.min(NUGGET.goldPct * game.gold, getGps() * NUGGET.goldSeconds) + getClickValue() * NUGGET.goldClickBonus;
+    game.gold += bonus;
+    game.totalGold += bonus;
+    return { type: 'gold', amount: bonus };
+  }
+  game.frenzyLeft = NUGGET.frenzyDuration;
+  return { type: 'frenzy', mult: NUGGET.frenzyMult, dur: NUGGET.frenzyDuration };
+}
 
 // Karşılanan başarımların kilidini açar; yeni açılanları dizi olarak döndürür.
 function checkAchievements() {
@@ -60,7 +75,7 @@ function checkAchievements() {
 function genProduction(genId) {
   const def = GENERATORS.find(g => g.id === genId);
   const owned = game.gens[genId] || 0;
-  return owned * def.baseProd * getGenMult(genId) * getGlobalProdMult() * getPrestigeMult() * getAchievementMult();
+  return owned * def.baseProd * getGenMult(genId) * getGlobalProdMult() * getPrestigeMult() * getAchievementMult() * getFrenzyMult();
 }
 
 // Toplam altın/saniye.
@@ -144,6 +159,7 @@ function clickMine() {
 
 // dt saniye kadar otomatik üretim ekler.
 function tick(dt) {
+  if (game.frenzyLeft > 0) game.frenzyLeft = Math.max(0, game.frenzyLeft - dt);
   const g = getGps() * dt;
   game.gold += g;
   game.totalGold += g;

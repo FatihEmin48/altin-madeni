@@ -11,6 +11,7 @@ Tarayıcıda oynanan bir **idle / artırımlı (incremental)** oyun. Saf HTML5 +
 - **Alım miktarı** (×1 / ×10 / Max) ile toplu alım yap.
 - **Yükseltmeler** tıklama gücünü ya da üretimi çarpar (tek seferlik).
 - **Başarımlar** (tıklama/altın/üretici kilometre taşları) açıldıkça bildirim çıkar ve her biri tüm üretime kalıcı **+%1** ekler.
+- **Altın külçesi:** Ara sıra ekranda parlayan bir külçe belirir; tıklarsan ya toplu **bonus altın** ya da geçici **Altın Hücumu** (üretim ×7, 15 sn) kazanırsın. Aktif oynamayı ödüllendirir.
 - **Yeniden Doğuş (prestij):** Yeterince altın biriktirince (1M+) her şeyi sıfırlayıp kalıcı **💎 elmas** kazanırsın; her elmas tüm üretime **+%2** kalıcı çarpan verir. Elmaslar toplam kazanılan altına göre hesaplanır ve sıfırlanmaz.
 - Oyun otomatik kaydedilir (localStorage). Kapatıp döndüğünde madencilerin sen yokken de çalışır — **offline kazanç** (en fazla 8 saat, %50 verimle).
 

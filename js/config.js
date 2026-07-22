@@ -59,6 +59,15 @@ const ACHIEVEMENTS = [
 ];
 
 const BASE_CLICK = 1;         // yükseltmesiz tıklama başına altın
+// Altın külçesi: ara sıra ekranda beliren, tıklanınca ödül veren bonus.
+// İki ödül türü: toplu bonus altın ya da geçici "Altın Hücumu" üretim çarpanı.
+const NUGGET = {
+  minInterval: 60, maxInterval: 150, // beliriş aralığı (sn)
+  lifetime: 12,                      // ekranda kalma süresi (sn)
+  frenzyMult: 7, frenzyDuration: 15, // hücum çarpanı ve süresi (sn)
+  goldSeconds: 90, goldPct: 0.10, goldClickBonus: 10, // bonus altın hesabı
+};
+
 const OFFLINE_MAX_SEC = 8 * 3600; // en fazla 8 saatlik offline kazanç
 const OFFLINE_RATE = 0.5;     // offline kazanç, aktif üretimin %50'si
 const AUTOSAVE_SEC = 15;

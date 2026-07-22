@@ -134,6 +134,33 @@ section h2 { font-size: 16px; color: var(--gold2); margin: 0 0 8px; }
 .ach-name { font-weight: bold; font-size: 13px; }
 .ach-desc { font-size: 11px; color: var(--muted); }
 
+/* --- Altın külçesi --- */
+.nugget {
+  position: fixed;
+  z-index: 150;
+  width: 64px; height: 64px;
+  font-size: 40px; line-height: 64px; text-align: center;
+  background: radial-gradient(circle at 40% 35%, #fff6c8, #f1c40f 60%, #b8860b);
+  border: 2px solid #fff2b0; border-radius: 50%;
+  cursor: pointer; padding: 0;
+  box-shadow: 0 0 20px rgba(241,196,15,0.8), 0 4px 12px rgba(0,0,0,0.5);
+  animation: nuggetPulse 0.8s ease-in-out infinite;
+}
+@keyframes nuggetPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+/* --- Altın Hücumu bandı --- */
+#frenzy-banner {
+  position: fixed; top: 0; left: 0; right: 0;
+  background: linear-gradient(90deg, #e67e22, #f1c40f, #e67e22);
+  color: #1c160c; font-weight: bold; text-align: center;
+  padding: 6px; z-index: 180; font-size: 15px;
+  box-shadow: 0 2px 10px rgba(241,196,15,0.6);
+}
+#frenzy-banner.hidden { display: none; }
+
 /* --- Toast --- */
 #toast {
   position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-20px);
