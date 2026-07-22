@@ -2,6 +2,8 @@
 
 Tarayıcıda oynanan bir **idle / artırımlı (incremental)** oyun. Saf HTML5 + CSS + vanilla JavaScript — framework yok, build adımı yok. `index.html`'i çift tıklayarak da çalışır.
 
+**Canlı oyna:** https://fatihemin48.github.io/altin-madeni/
+
 ## Nasıl oynanır
 
 - **KAZ!** butonuna tıklayarak elle altın kazan.
