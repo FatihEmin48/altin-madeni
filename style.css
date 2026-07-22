@@ -121,6 +121,36 @@ section h2 { font-size: 16px; color: var(--gold2); margin: 0 0 8px; }
 .up-row.owned { opacity: 0.6; border-color: var(--ok); }
 .up-row.owned .up-cost { color: var(--ok); }
 
+/* --- Otomasyon --- */
+#automation { display: flex; flex-direction: column; gap: 8px; }
+.auto-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  width: 100%; text-align: left;
+  background: var(--panel); color: var(--text);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 10px 12px; cursor: pointer;
+}
+.auto-row:hover:not(:disabled) { background: var(--panel2); }
+.auto-row.locked { opacity: 0.55; }
+.auto-row.done { border-color: var(--ok); }
+.auto-name { font-weight: bold; flex: 1; }
+.auto-desc { font-size: 12px; color: var(--muted); width: 100%; }
+.auto-cost { color: var(--gold); font-weight: bold; }
+.auto-state.on { color: var(--ok); font-weight: bold; }
+.auto-state.off { color: #e74c3c; font-weight: bold; }
+
+/* --- İstatistikler --- */
+#stats {
+  background: var(--panel); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 6px 12px;
+}
+.stat-row {
+  display: flex; justify-content: space-between; padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 14px;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-row span { color: var(--muted); }
+
 /* --- Başarımlar --- */
 #ach-count { color: var(--muted); font-size: 13px; font-weight: normal; }
 #achievements { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }

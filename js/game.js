@@ -10,6 +10,10 @@ function createState() {
     gems: 0,        // prestij parası (💎), kalıcı
     achievements: [], // açılan başarım id'leri (kalıcı)
     frenzyLeft: 0,  // "Altın Hücumu" kalan süre (sn), geçici — kaydedilmez
+    autoClicker: false, // oto-tıklayıcı alındı mı
+    autoBuyer: false,   // oto-alıcı alındı mı
+    autoBuyerOn: true,  // oto-alıcı açık mı
+    playtime: 0,        // toplam oynama süresi (sn)
     clicks: 0,
     gens,
     upgrades: [],   // satın alınan yükseltme id'leri
@@ -157,12 +161,56 @@ function clickMine() {
   return v;
 }
 
-// dt saniye kadar otomatik üretim ekler.
+// En ucuz karşılanabilir üreticiden 1 alır (oto-alıcı için).
+function buyCheapestGenerator() {
+  let best = null, bestCost = Infinity;
+  for (const g of GENERATORS) {
+    const c = genBulkCost(g.id, 1);
+    if (c < bestCost) { bestCost = c; best = g.id; }
+  }
+  if (best && game.gold >= bestCost) return buyGenerator(best, 1) > 0;
+  return false;
+}
+
+// --- Otomasyon satın alma ---
+function buyAutoClicker() {
+  if (game.autoClicker || game.gold < AUTOMATION.autoClickCost) return false;
+  game.gold -= AUTOMATION.autoClickCost;
+  game.autoClicker = true;
+  return true;
+}
+function buyAutoBuyer() {
+  if (game.autoBuyer || game.gold < AUTOMATION.autoBuyerCost) return false;
+  game.gold -= AUTOMATION.autoBuyerCost;
+  game.autoBuyer = true;
+  game.autoBuyerOn = true;
+  return true;
+}
+function toggleAutoBuyer() { game.autoBuyerOn = !game.autoBuyerOn; return game.autoBuyerOn; }
+
+// dt saniye kadar otomatik üretim + otomasyon işler.
 function tick(dt) {
+  game.playtime += dt;
   if (game.frenzyLeft > 0) game.frenzyLeft = Math.max(0, game.frenzyLeft - dt);
+
+  if (game.autoClicker) {
+    const c = AUTOMATION.autoClickRate * dt;      // saniyede autoClickRate tıklama
+    const gain = getClickValue() * c;
+    game.gold += gain; game.totalGold += gain; game.clicks += c;
+  }
+
   const g = getGps() * dt;
   game.gold += g;
   game.totalGold += g;
+
+  if (game.autoBuyer && game.autoBuyerOn) {
+    game.abAccum = (game.abAccum || 0) + dt;
+    let guard = 0;
+    while (game.abAccum >= AUTOMATION.autoBuyInterval && guard++ < 50) {
+      game.abAccum -= AUTOMATION.autoBuyInterval;
+      buyCheapestGenerator();
+    }
+  }
 }
 
 // --- Kaydet / yükle / offline ---
@@ -182,6 +230,10 @@ function loadGame() {
     s.totalGold = +d.totalGold || 0;
     s.gems = +d.gems || 0;
     if (Array.isArray(d.achievements)) s.achievements = d.achievements.filter(id => ACHIEVEMENTS.some(a => a.id === id));
+    s.autoClicker = !!d.autoClicker;
+    s.autoBuyer = !!d.autoBuyer;
+    s.autoBuyerOn = d.autoBuyerOn !== false;
+    s.playtime = +d.playtime || 0;
     s.clicks = +d.clicks || 0;
     s.lastSave = +d.lastSave || Date.now();
     if (d.gens && typeof d.gens === 'object') for (const g of GENERATORS) s.gens[g.id] = +d.gens[g.id] || 0;

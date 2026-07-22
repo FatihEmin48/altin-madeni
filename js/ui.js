@@ -23,6 +23,8 @@ const UI = (function () {
     els.achCount = document.getElementById('ach-count');
     els.toast = document.getElementById('toast');
     els.frenzyBanner = document.getElementById('frenzy-banner');
+    els.automation = document.getElementById('automation');
+    els.stats = document.getElementById('stats');
 
     // Kazma: masaüstünde click, dokunmatikte touchstart (preventDefault ile
     // hem çift-dokun zoom'unu hem emüle edilen click'i engeller → çift saymaz).
@@ -69,6 +71,61 @@ const UI = (function () {
     buildGenerators();
     buildUpgrades();
     buildAchievements();
+    buildAutomation();
+  }
+
+  let autoClickRow, autoBuyRow;
+  function buildAutomation() {
+    els.automation.innerHTML = '';
+    autoClickRow = document.createElement('button');
+    autoClickRow.className = 'auto-row';
+    autoClickRow.addEventListener('click', () => { if (buyAutoClicker()) syncAutomation(); });
+    autoBuyRow = document.createElement('button');
+    autoBuyRow.className = 'auto-row';
+    autoBuyRow.addEventListener('click', () => {
+      if (!game.autoBuyer) { if (buyAutoBuyer()) syncAutomation(); }
+      else { toggleAutoBuyer(); syncAutomation(); }
+    });
+    els.automation.appendChild(autoClickRow);
+    els.automation.appendChild(autoBuyRow);
+    syncAutomation();
+  }
+
+  function syncAutomation() {
+    // Oto-tıklayıcı
+    if (game.autoClicker) {
+      autoClickRow.innerHTML = `<div class="auto-name">🖱️ Oto-Tıklayıcı</div><div class="auto-state on">✓ Aktif · ${AUTOMATION.autoClickRate}/sn</div>`;
+      autoClickRow.classList.add('done'); autoClickRow.disabled = true;
+    } else {
+      autoClickRow.innerHTML = `<div class="auto-name">🖱️ Oto-Tıklayıcı</div><div class="auto-desc">Saniyede ${AUTOMATION.autoClickRate} otomatik kaz</div><div class="auto-cost">🪙 ${formatNum(AUTOMATION.autoClickCost)}</div>`;
+      const afford = game.gold >= AUTOMATION.autoClickCost;
+      autoClickRow.classList.toggle('locked', !afford); autoClickRow.disabled = !afford;
+    }
+    // Oto-alıcı
+    if (game.autoBuyer) {
+      const on = game.autoBuyerOn;
+      autoBuyRow.innerHTML = `<div class="auto-name">🛒 Oto-Alıcı</div><div class="auto-state ${on ? 'on' : 'off'}">${on ? 'Açık' : 'Kapalı'} (değiştir)</div>`;
+      autoBuyRow.classList.remove('locked', 'done'); autoBuyRow.disabled = false;
+    } else {
+      autoBuyRow.innerHTML = `<div class="auto-name">🛒 Oto-Alıcı</div><div class="auto-desc">En ucuz üreticiyi otomatik alır</div><div class="auto-cost">🪙 ${formatNum(AUTOMATION.autoBuyerCost)}</div>`;
+      const afford = game.gold >= AUTOMATION.autoBuyerCost;
+      autoBuyRow.classList.toggle('locked', !afford); autoBuyRow.disabled = !afford;
+    }
+  }
+
+  function syncStats() {
+    const totalOwned = GENERATORS.reduce((s, g) => s + (game.gens[g.id] || 0), 0);
+    const rows = [
+      ['Toplam kazanılan altın', formatNum(game.totalGold)],
+      ['Altın / sn', formatNum(getGps())],
+      ['Toplam tıklama', formatNum(Math.floor(game.clicks))],
+      ['💎 Elmas', `${formatNum(game.gems)} (+${Math.round((getPrestigeMult() - 1) * 100)}%)`],
+      ['Başarım bonusu', `+${Math.round((getAchievementMult() - 1) * 100)}%`],
+      ['Toplam üretici', formatNum(totalOwned)],
+      ['Açılan başarım', `${game.achievements.length}/${ACHIEVEMENTS.length}`],
+      ['Oynama süresi', formatDuration(game.playtime)],
+    ];
+    els.stats.innerHTML = rows.map(([k, v]) => `<div class="stat-row"><span>${k}</span><b>${v}</b></div>`).join('');
   }
 
   const achRows = {};
@@ -245,6 +302,8 @@ const UI = (function () {
     syncUpgrades();
     syncPrestige();
     syncFrenzy();
+    syncAutomation();
+    syncStats();
 
     const newly = checkAchievements();
     if (newly.length) {

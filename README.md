@@ -12,6 +12,8 @@ Tarayıcıda oynanan bir **idle / artırımlı (incremental)** oyun. Saf HTML5 +
 - **Yükseltmeler** tıklama gücünü ya da üretimi çarpar (tek seferlik).
 - **Başarımlar** (tıklama/altın/üretici kilometre taşları) açıldıkça bildirim çıkar ve her biri tüm üretime kalıcı **+%1** ekler.
 - **Altın külçesi:** Ara sıra ekranda parlayan bir külçe belirir; tıklarsan ya toplu **bonus altın** ya da geçici **Altın Hücumu** (üretim ×7, 15 sn) kazanırsın. Aktif oynamayı ödüllendirir.
+- **Otomasyon:** **Oto-Tıklayıcı** (saniyede otomatik kazar) ve **Oto-Alıcı** (açık/kapalı; en ucuz üreticiyi otomatik satın alır) satın alınabilir.
+- **İstatistikler:** Toplam altın, altın/sn, tıklama, elmas/bonuslar, üretici sayısı, oynama süresi.
 - **Yeniden Doğuş (prestij):** Yeterince altın biriktirince (1M+) her şeyi sıfırlayıp kalıcı **💎 elmas** kazanırsın; her elmas tüm üretime **+%2** kalıcı çarpan verir. Elmaslar toplam kazanılan altına göre hesaplanır ve sıfırlanmaz.
 - Oyun otomatik kaydedilir (localStorage). Kapatıp döndüğünde madencilerin sen yokken de çalışır — **offline kazanç** (en fazla 8 saat, %50 verimle).
 
@@ -41,4 +43,4 @@ Saf mantık (`js/game.js`) DOM'dan bağımsızdır, bu yüzden Node ile test edi
 
 ## Henüz kapsam dışı (sonraki sürümler)
 
-Başarımlar, altın külçesi bonusu, otomasyon/yöneticiler, daha fazla üretici/yükseltme, ses, istatistik ekranı.
+Ses/müzik, kaydı dışa/içe aktar, kritik tıklama, daha fazla üretici/yükseltme katmanı.

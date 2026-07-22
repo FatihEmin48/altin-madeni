@@ -68,6 +68,13 @@ const NUGGET = {
   goldSeconds: 90, goldPct: 0.10, goldClickBonus: 10, // bonus altın hesabı
 };
 
+// Otomasyon (tek seferlik satın alınır): oto-tıklayıcı saniyede birkaç kez
+// otomatik kazar; oto-alıcı (açık/kapalı) periyodik olarak en ucuz üreticiyi alır.
+const AUTOMATION = {
+  autoClickCost: 50000, autoClickRate: 5,
+  autoBuyerCost: 2e6,   autoBuyInterval: 1.0,
+};
+
 const OFFLINE_MAX_SEC = 8 * 3600; // en fazla 8 saatlik offline kazanç
 const OFFLINE_RATE = 0.5;     // offline kazanç, aktif üretimin %50'si
 const AUTOSAVE_SEC = 15;
