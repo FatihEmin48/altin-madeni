@@ -37,6 +37,27 @@ const UPGRADES = [
 const GEM_DIVISOR = 1e6;
 const GEM_BONUS = 0.02;
 
+// Başarımlar (js/game.js): check(game) doğruysa kilidi açılır ve kalıcı olarak
+// tüm üretime +ACH_BONUS (%1) ekler. Hedef + küçük bonus.
+const ACH_BONUS = 0.01;
+const ACHIEVEMENTS = [
+  { id: 'click100',  name: 'Acemi Madenci',   desc: '100 kez kaz',            check: g => g.clicks >= 100 },
+  { id: 'click1k',   name: 'Kaslı Kollar',    desc: '1.000 kez kaz',          check: g => g.clicks >= 1000 },
+  { id: 'click10k',  name: 'Kazma Ustası',    desc: '10.000 kez kaz',         check: g => g.clicks >= 10000 },
+  { id: 'gold1k',    name: 'İlk Kazanç',      desc: 'Toplam 1.000 altın',     check: g => g.totalGold >= 1000 },
+  { id: 'gold1m',    name: 'Milyoner',        desc: 'Toplam 1M altın',        check: g => g.totalGold >= 1e6 },
+  { id: 'gold1b',    name: 'Milyarder',       desc: 'Toplam 1B altın',        check: g => g.totalGold >= 1e9 },
+  { id: 'gold1t',    name: 'Trilyoner',       desc: 'Toplam 1T altın',        check: g => g.totalGold >= 1e12 },
+  { id: 'kazmaci10', name: 'Ekip Kur',        desc: '10 Kazmacı',             check: g => g.gens.kazmaci >= 10 },
+  { id: 'kazmaci50', name: 'Kazmacı Ordusu',  desc: '50 Kazmacı',             check: g => g.gens.kazmaci >= 50 },
+  { id: 'reaktor1',  name: 'Elmas Çağı',      desc: 'İlk Elmas Reaktörü',     check: g => g.gens.reaktor >= 1 },
+  { id: 'alltypes',  name: 'Çeşitlilik',      desc: 'Her üreticiden en az 1', check: g => GENERATORS.every(x => (g.gens[x.id] || 0) >= 1) },
+  { id: 'up5',       name: 'Yükseltme Sever',  desc: '5 yükseltme al',        check: g => g.upgrades.length >= 5 },
+  { id: 'upall',     name: 'Tam Donanım',     desc: 'Tüm yükseltmeleri al',   check: g => g.upgrades.length >= UPGRADES.length },
+  { id: 'prestige1', name: 'Yeniden Doğuş',   desc: 'İlk kez yeniden doğ',    check: g => g.gems >= 1 },
+  { id: 'prestige10', name: 'Elmas Avcısı',   desc: '10 elmasa ulaş',         check: g => g.gems >= 10 },
+];
+
 const BASE_CLICK = 1;         // yükseltmesiz tıklama başına altın
 const OFFLINE_MAX_SEC = 8 * 3600; // en fazla 8 saatlik offline kazanç
 const OFFLINE_RATE = 0.5;     // offline kazanç, aktif üretimin %50'si

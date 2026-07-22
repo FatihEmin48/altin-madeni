@@ -121,6 +121,30 @@ section h2 { font-size: 16px; color: var(--gold2); margin: 0 0 8px; }
 .up-row.owned { opacity: 0.6; border-color: var(--ok); }
 .up-row.owned .up-cost { color: var(--ok); }
 
+/* --- Başarımlar --- */
+#ach-count { color: var(--muted); font-size: 13px; font-weight: normal; }
+#achievements { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ach-row {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--panel); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px; padding: 8px 10px; opacity: 0.5;
+}
+.ach-row.done { opacity: 1; border-color: var(--gold2); }
+.ach-icon { font-size: 20px; }
+.ach-name { font-weight: bold; font-size: 13px; }
+.ach-desc { font-size: 11px; color: var(--muted); }
+
+/* --- Toast --- */
+#toast {
+  position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-20px);
+  background: rgba(20,16,10,0.95); border: 1px solid var(--gold2);
+  color: var(--text); padding: 10px 18px; border-radius: 8px;
+  font-size: 14px; z-index: 200; opacity: 0; transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none; max-width: 90vw; text-align: center;
+}
+#toast.hidden { display: none; }
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
 /* --- Prestij --- */
 #prestige-section {
   background: linear-gradient(135deg, #2a1e3a, #1c1424);
@@ -171,6 +195,6 @@ footer {
 }
 
 @media (max-width: 480px) {
-  #upgrades { grid-template-columns: 1fr; }
+  #upgrades, #achievements { grid-template-columns: 1fr; }
   .gold { font-size: 26px; }
 }

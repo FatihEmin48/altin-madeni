@@ -8,6 +8,7 @@ function createState() {
     gold: 0,
     totalGold: 0,   // ömür boyu üretilen (prestij eğrisini besler, sıfırlanmaz)
     gems: 0,        // prestij parası (💎), kalıcı
+    achievements: [], // açılan başarım id'leri (kalıcı)
     clicks: 0,
     gens,
     upgrades: [],   // satın alınan yükseltme id'leri
@@ -38,14 +39,28 @@ function getGenMult(genId) {
 
 // Prestij çarpanı: sahip olunan her elmas tüm üretime +GEM_BONUS.
 function getPrestigeMult() { return 1 + game.gems * GEM_BONUS; }
+// Başarım çarpanı: açılan her başarım tüm üretime +ACH_BONUS.
+function getAchievementMult() { return 1 + game.achievements.length * ACH_BONUS; }
 
-function getClickValue() { return BASE_CLICK * getClickMult() * getPrestigeMult(); }
+function getClickValue() { return BASE_CLICK * getClickMult() * getPrestigeMult() * getAchievementMult(); }
+
+// Karşılanan başarımların kilidini açar; yeni açılanları dizi olarak döndürür.
+function checkAchievements() {
+  const newly = [];
+  for (const a of ACHIEVEMENTS) {
+    if (game.achievements.indexOf(a.id) !== -1) continue;
+    let ok = false;
+    try { ok = !!a.check(game); } catch (e) { ok = false; }
+    if (ok) { game.achievements.push(a.id); newly.push(a); }
+  }
+  return newly;
+}
 
 // Tek bir üreticinin saniyelik üretimi (sahip olunan × taban × çarpanlar).
 function genProduction(genId) {
   const def = GENERATORS.find(g => g.id === genId);
   const owned = game.gens[genId] || 0;
-  return owned * def.baseProd * getGenMult(genId) * getGlobalProdMult() * getPrestigeMult();
+  return owned * def.baseProd * getGenMult(genId) * getGlobalProdMult() * getPrestigeMult() * getAchievementMult();
 }
 
 // Toplam altın/saniye.
@@ -150,6 +165,7 @@ function loadGame() {
     s.gold = +d.gold || 0;
     s.totalGold = +d.totalGold || 0;
     s.gems = +d.gems || 0;
+    if (Array.isArray(d.achievements)) s.achievements = d.achievements.filter(id => ACHIEVEMENTS.some(a => a.id === id));
     s.clicks = +d.clicks || 0;
     s.lastSave = +d.lastSave || Date.now();
     if (d.gens && typeof d.gens === 'object') for (const g of GENERATORS) s.gens[g.id] = +d.gens[g.id] || 0;

@@ -19,6 +19,9 @@ const UI = (function () {
     els.offlineText = document.getElementById('offline-text');
     els.prestigeInfo = document.getElementById('prestige-info');
     els.prestigeBtn = document.getElementById('prestige-btn');
+    els.achievements = document.getElementById('achievements');
+    els.achCount = document.getElementById('ach-count');
+    els.toast = document.getElementById('toast');
 
     // Kazma: masaüstünde click, dokunmatikte touchstart (preventDefault ile
     // hem çift-dokun zoom'unu hem emüle edilen click'i engeller → çift saymaz).
@@ -64,6 +67,41 @@ const UI = (function () {
 
     buildGenerators();
     buildUpgrades();
+    buildAchievements();
+  }
+
+  const achRows = {};
+  function buildAchievements() {
+    els.achievements.innerHTML = '';
+    for (const a of ACHIEVEMENTS) {
+      const row = document.createElement('div');
+      row.className = 'ach-row';
+      row.innerHTML = `<div class="ach-icon">🔒</div><div class="ach-body"><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div></div>`;
+      els.achievements.appendChild(row);
+      achRows[a.id] = { row, icon: row.querySelector('.ach-icon') };
+    }
+    syncAchievements();
+  }
+
+  function syncAchievements() {
+    let done = 0;
+    for (const a of ACHIEVEMENTS) {
+      const unlocked = game.achievements.indexOf(a.id) !== -1;
+      if (unlocked) done++;
+      const r = achRows[a.id];
+      r.row.classList.toggle('done', unlocked);
+      r.icon.textContent = unlocked ? '🏅' : '🔒';
+    }
+    els.achCount.textContent = `(${done}/${ACHIEVEMENTS.length})`;
+  }
+
+  let toastTimer = null;
+  function showToast(text) {
+    els.toast.innerHTML = text;
+    els.toast.classList.remove('hidden');
+    els.toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => els.toast.classList.remove('show'), 2600);
   }
 
   function spawnClickFx(amount, e) {
@@ -172,6 +210,12 @@ const UI = (function () {
     syncGenerators();
     syncUpgrades();
     syncPrestige();
+
+    const newly = checkAchievements();
+    if (newly.length) {
+      syncAchievements();
+      showToast(`🏅 Başarım: <b>${newly.map(a => a.name).join(', ')}</b>`);
+    }
   }
 
   function flashSaved() {
