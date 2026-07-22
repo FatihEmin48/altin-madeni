@@ -11,6 +11,18 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; }
+
+/* Mobilde hızlı üst üste dokununca çift-dokunuş yakınlaştırmasını engelle
+   (KAZ! butonu spam'lenirken telefon zoom yapmasın). manipulation kaydırma ve
+   iki-parmak yakınlaştırmayı korur, sadece çift-dokun/uzun-bas jestlerini kapatır. */
+html, body { touch-action: manipulation; }
+button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 body {
   background: radial-gradient(circle at 50% 0%, #2a2113, var(--bg));
   color: var(--text);

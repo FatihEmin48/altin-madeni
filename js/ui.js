@@ -18,10 +18,17 @@ const UI = (function () {
     els.offlinePopup = document.getElementById('offline-popup');
     els.offlineText = document.getElementById('offline-text');
 
-    els.mineBtn.addEventListener('click', (e) => {
+    // Kazma: masaüstünde click, dokunmatikte touchstart (preventDefault ile
+    // hem çift-dokun zoom'unu hem emüle edilen click'i engeller → çift saymaz).
+    function doMine(pointer) {
       const v = clickMine();
-      spawnClickFx(v, e);
-    });
+      spawnClickFx(v, pointer);
+    }
+    els.mineBtn.addEventListener('click', (e) => doMine(e));
+    els.mineBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      doMine(e.changedTouches[0]);
+    }, { passive: false });
 
     document.querySelectorAll('.amt-btn').forEach(b => {
       b.addEventListener('click', () => {
