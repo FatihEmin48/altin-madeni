@@ -10,6 +10,7 @@ Tarayıcıda oynanan bir **idle / artırımlı (incremental)** oyun. Saf HTML5 +
 - **Üreticiler** (Kazmacı, Matkap, Vagon...) satın al; her biri saniyede otomatik altın üretir. Maliyet her alımda %15 artar.
 - **Alım miktarı** (×1 / ×10 / Max) ile toplu alım yap.
 - **Yükseltmeler** tıklama gücünü ya da üretimi çarpar (tek seferlik).
+- **Yeniden Doğuş (prestij):** Yeterince altın biriktirince (1M+) her şeyi sıfırlayıp kalıcı **💎 elmas** kazanırsın; her elmas tüm üretime **+%2** kalıcı çarpan verir. Elmaslar toplam kazanılan altına göre hesaplanır ve sıfırlanmaz.
 - Oyun otomatik kaydedilir (localStorage). Kapatıp döndüğünde madencilerin sen yokken de çalışır — **offline kazanç** (en fazla 8 saat, %50 verimle).
 
 ## Çalıştırma (yerelde)
@@ -38,4 +39,4 @@ Saf mantık (`js/game.js`) DOM'dan bağımsızdır, bu yüzden Node ile test edi
 
 ## Henüz kapsam dışı (sonraki sürümler)
 
-Prestij/yeniden doğuş, başarımlar, daha fazla üretici/yükseltme, ses, istatistik ekranı.
+Başarımlar, altın külçesi bonusu, otomasyon/yöneticiler, daha fazla üretici/yükseltme, ses, istatistik ekranı.

@@ -31,6 +31,12 @@ const UPGRADES = [
   { id: 'kazma4',   name: 'Lazer Kazma',       desc: 'Tıklama gücü ×3',        cost: 1e6,    effect: { clickMult: 3 } },
 ];
 
+// Prestij (Yeniden Doğuş): toplam kazanılan altına göre kalıcı 💎 elmas.
+// potansiyel elmas = floor(sqrt(toplamAltın / GEM_DIVISOR)); her elmas tüm
+// üretime +GEM_BONUS (%2) kalıcı çarpan verir. İlk elmas 1M toplam altında.
+const GEM_DIVISOR = 1e6;
+const GEM_BONUS = 0.02;
+
 const BASE_CLICK = 1;         // yükseltmesiz tıklama başına altın
 const OFFLINE_MAX_SEC = 8 * 3600; // en fazla 8 saatlik offline kazanç
 const OFFLINE_RATE = 0.5;     // offline kazanç, aktif üretimin %50'si

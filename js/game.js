@@ -6,7 +6,8 @@ function createState() {
   for (const g of GENERATORS) gens[g.id] = 0;
   return {
     gold: 0,
-    totalGold: 0,   // ömür boyu üretilen (başarım/prestij için ileride)
+    totalGold: 0,   // ömür boyu üretilen (prestij eğrisini besler, sıfırlanmaz)
+    gems: 0,        // prestij parası (💎), kalıcı
     clicks: 0,
     gens,
     upgrades: [],   // satın alınan yükseltme id'leri
@@ -35,13 +36,16 @@ function getGenMult(genId) {
   return m;
 }
 
-function getClickValue() { return BASE_CLICK * getClickMult(); }
+// Prestij çarpanı: sahip olunan her elmas tüm üretime +GEM_BONUS.
+function getPrestigeMult() { return 1 + game.gems * GEM_BONUS; }
+
+function getClickValue() { return BASE_CLICK * getClickMult() * getPrestigeMult(); }
 
 // Tek bir üreticinin saniyelik üretimi (sahip olunan × taban × çarpanlar).
 function genProduction(genId) {
   const def = GENERATORS.find(g => g.id === genId);
   const owned = game.gens[genId] || 0;
-  return owned * def.baseProd * getGenMult(genId) * getGlobalProdMult();
+  return owned * def.baseProd * getGenMult(genId) * getGlobalProdMult() * getPrestigeMult();
 }
 
 // Toplam altın/saniye.
@@ -96,6 +100,25 @@ function buyUpgrade(id) {
   return true;
 }
 
+// Toplam kazanılan altına göre ulaşılabilecek toplam elmas.
+function potentialGems() { return Math.floor(Math.sqrt(Math.max(0, game.totalGold) / GEM_DIVISOR)); }
+// Şimdi yeniden doğunca kazanılacak elmas (henüz alınmamış kısım).
+function pendingGems() { return Math.max(0, potentialGems() - game.gems); }
+// Bir sonraki elmas için gereken toplam altın (ipucu için).
+function goldForNextGem() { return Math.pow(potentialGems() + 1, 2) * GEM_DIVISOR; }
+
+// Yeniden doğ: bekleyen elması al, run ilerlemesini (altın/üretici/yükseltme)
+// sıfırla; elmas + toplam altın (+ ileride başarımlar) kalıcıdır.
+function prestige() {
+  const gain = pendingGems();
+  if (gain <= 0) return 0;
+  game.gems += gain;
+  game.gold = 0;
+  for (const g of GENERATORS) game.gens[g.id] = 0;
+  game.upgrades = [];
+  return gain;
+}
+
 function clickMine() {
   const v = getClickValue();
   game.gold += v;
@@ -126,6 +149,7 @@ function loadGame() {
     const s = createState();
     s.gold = +d.gold || 0;
     s.totalGold = +d.totalGold || 0;
+    s.gems = +d.gems || 0;
     s.clicks = +d.clicks || 0;
     s.lastSave = +d.lastSave || Date.now();
     if (d.gens && typeof d.gens === 'object') for (const g of GENERATORS) s.gens[g.id] = +d.gens[g.id] || 0;

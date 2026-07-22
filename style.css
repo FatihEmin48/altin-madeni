@@ -121,6 +121,26 @@ section h2 { font-size: 16px; color: var(--gold2); margin: 0 0 8px; }
 .up-row.owned { opacity: 0.6; border-color: var(--ok); }
 .up-row.owned .up-cost { color: var(--ok); }
 
+/* --- Prestij --- */
+#prestige-section {
+  background: linear-gradient(135deg, #2a1e3a, #1c1424);
+  border: 1px solid #5b3fa0;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+}
+#prestige-info { margin-bottom: 10px; color: var(--text); }
+.prestige-btn {
+  background: linear-gradient(135deg, #9b59b6, #6c3fa0);
+  color: #fff; border: none;
+  padding: 12px 22px; border-radius: 10px; cursor: pointer;
+  font-weight: bold; font-size: 15px;
+}
+.prestige-btn:hover:not(:disabled) { filter: brightness(1.1); }
+.prestige-btn.locked, .prestige-btn:disabled {
+  background: #2f2740; color: var(--muted); cursor: default; font-size: 13px;
+}
+
 /* --- Footer --- */
 footer {
   margin-top: 22px; display: flex; align-items: center; justify-content: space-between;

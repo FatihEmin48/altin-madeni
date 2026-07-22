@@ -17,6 +17,8 @@ const UI = (function () {
     els.saveStatus = document.getElementById('save-status');
     els.offlinePopup = document.getElementById('offline-popup');
     els.offlineText = document.getElementById('offline-text');
+    els.prestigeInfo = document.getElementById('prestige-info');
+    els.prestigeBtn = document.getElementById('prestige-btn');
 
     // Kazma: masaüstünde click, dokunmatikte touchstart (preventDefault ile
     // hem çift-dokun zoom'unu hem emüle edilen click'i engeller → çift saymaz).
@@ -48,6 +50,16 @@ const UI = (function () {
     });
     document.getElementById('offline-close').addEventListener('click', () => {
       els.offlinePopup.classList.add('hidden');
+    });
+    els.prestigeBtn.addEventListener('click', () => {
+      const p = pendingGems();
+      if (p <= 0) return;
+      if (confirm(`Yeniden doğ: +${formatNum(p)} 💎 elmas kazanacaksın. Altının, üreticilerin ve yükseltmelerin sıfırlanacak (elmasların kalıcı). Emin misin?`)) {
+        prestige();
+        syncGenerators();
+        syncUpgrades();
+        syncPrestige();
+      }
     });
 
     buildGenerators();
@@ -137,6 +149,21 @@ const UI = (function () {
     }
   }
 
+  function syncPrestige() {
+    const bonus = Math.round((getPrestigeMult() - 1) * 100);
+    els.prestigeInfo.innerHTML = `💎 <b>${formatNum(game.gems)}</b> elmas · tüm üretim <b>+${bonus}%</b>`;
+    const pending = pendingGems();
+    if (pending > 0) {
+      els.prestigeBtn.textContent = `Yeniden Doğ  (+${formatNum(pending)} 💎)`;
+      els.prestigeBtn.disabled = false;
+      els.prestigeBtn.classList.remove('locked');
+    } else {
+      els.prestigeBtn.textContent = `Sonraki 💎: ${formatNum(goldForNextGem())} toplam altın`;
+      els.prestigeBtn.disabled = true;
+      els.prestigeBtn.classList.add('locked');
+    }
+  }
+
   // Her ~100ms: üst sayaçlar + karşılanabilirlikler.
   function sync() {
     els.gold.textContent = formatNum(game.gold);
@@ -144,6 +171,7 @@ const UI = (function () {
     els.clickVal.textContent = '+' + formatNum(getClickValue());
     syncGenerators();
     syncUpgrades();
+    syncPrestige();
   }
 
   function flashSaved() {
