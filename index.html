@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Altın Madeni İmparatorluğu</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>⛏️ Altın Madeni</h1>
+      <div class="counters">
+        <div class="gold">🪙 <span id="gold">0</span></div>
+        <div class="gps"><span id="gps">0</span> altın/sn</div>
+      </div>
+    </header>
+
+    <section id="clicker">
+      <button id="mine-btn">
+        <span class="mine-emoji">⛰️</span>
+        <span class="mine-label">KAZ!</span>
+        <span id="click-val">+1</span>
+      </button>
+      <div id="click-fx"></div>
+    </section>
+
+    <section id="controls">
+      <span class="controls-label">Alım miktarı:</span>
+      <button class="amt-btn active" data-amt="1">×1</button>
+      <button class="amt-btn" data-amt="10">×10</button>
+      <button class="amt-btn" data-amt="max">Max</button>
+    </section>
+
+    <section>
+      <h2>⚙️ Üreticiler</h2>
+      <div id="generators"></div>
+    </section>
+
+    <section>
+      <h2>⬆️ Yükseltmeler</h2>
+      <div id="upgrades"></div>
+    </section>
+
+    <footer>
+      <span id="save-status">💾 Otomatik kayıt açık</span>
+      <button id="reset-btn">Sıfırla</button>
+    </footer>
+  </div>
+
+  <div id="offline-popup" class="hidden">
+    <div class="popup-box">
+      <h3>Tekrar hoş geldin! 👷</h3>
+      <p id="offline-text"></p>
+      <button id="offline-close">Topla</button>
+    </div>
+  </div>
+
+  <script src="js/format.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
