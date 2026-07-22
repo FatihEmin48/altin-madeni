@@ -14,6 +14,7 @@ Tarayıcıda oynanan bir **idle / artırımlı (incremental)** oyun. Saf HTML5 +
 - **Altın külçesi:** Ara sıra ekranda parlayan bir külçe belirir; tıklarsan ya toplu **bonus altın** ya da geçici **Altın Hücumu** (üretim ×7, 15 sn) kazanırsın. Aktif oynamayı ödüllendirir.
 - **Otomasyon:** **Oto-Tıklayıcı** (saniyede otomatik kazar) ve **Oto-Alıcı** (açık/kapalı; en ucuz üreticiyi otomatik satın alır) satın alınabilir.
 - **İstatistikler:** Toplam altın, altın/sn, tıklama, elmas/bonuslar, üretici sayısı, oynama süresi.
+- **Online (Supabase):** E-posta ile giriş/kayıt → **buluta kaydet / buluttan yükle** (cihazlar arası yedek) ve **skor tablosu** (elmasa göre ilk 20). Kurulum: `supabase/KURULUM.md` + `supabase/schema.sql`. İstemcideki `publishable` anahtar güvenlidir; erişim RLS ile korunur.
 - **Yeniden Doğuş (prestij):** Yeterince altın biriktirince (1M+) her şeyi sıfırlayıp kalıcı **💎 elmas** kazanırsın; her elmas tüm üretime **+%2** kalıcı çarpan verir. Elmaslar toplam kazanılan altına göre hesaplanır ve sıfırlanmaz.
 - Oyun otomatik kaydedilir (localStorage). Kapatıp döndüğünde madencilerin sen yokken de çalışır — **offline kazanç** (en fazla 8 saat, %50 verimle).
 

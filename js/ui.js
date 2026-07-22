@@ -25,6 +25,13 @@ const UI = (function () {
     els.frenzyBanner = document.getElementById('frenzy-banner');
     els.automation = document.getElementById('automation');
     els.stats = document.getElementById('stats');
+    els.cloudStatus = document.getElementById('cloud-status');
+    els.cloudLoggedout = document.getElementById('cloud-loggedout');
+    els.cloudLoggedin = document.getElementById('cloud-loggedin');
+    els.cloudEmail = document.getElementById('cloud-email');
+    els.cloudPass = document.getElementById('cloud-pass');
+    els.cloudNick = document.getElementById('cloud-nick');
+    els.leaderboard = document.getElementById('leaderboard');
 
     // Kazma: masaüstünde click, dokunmatikte touchstart (preventDefault ile
     // hem çift-dokun zoom'unu hem emüle edilen click'i engeller → çift saymaz).
@@ -72,6 +79,98 @@ const UI = (function () {
     buildUpgrades();
     buildAchievements();
     buildAutomation();
+    initCloud();
+  }
+
+  const NICK_KEY = 'am_nick';
+  function cloudMsg(text, ok) {
+    els.cloudStatus.textContent = text || '';
+    els.cloudStatus.className = ok ? 'ok' : (text ? 'err' : '');
+  }
+
+  function initCloud() {
+    document.getElementById('cloud-signup').addEventListener('click', () => cloudAuth('signup'));
+    document.getElementById('cloud-signin').addEventListener('click', () => cloudAuth('signin'));
+    document.getElementById('cloud-signout').addEventListener('click', async () => { await Cloud.signOut(); cloudMsg('Çıkış yapıldı'); });
+    document.getElementById('cloud-save').addEventListener('click', cloudSave);
+    document.getElementById('cloud-load').addEventListener('click', cloudLoad);
+    document.getElementById('lb-refresh').addEventListener('click', refreshLeaderboard);
+    try { els.cloudNick.value = localStorage.getItem(NICK_KEY) || ''; } catch (e) { /* yok */ }
+
+    if (!Cloud.available()) { cloudMsg('Online şu an kullanılamıyor (bağlantı yok).'); return; }
+    Cloud.init(syncCloud);
+  }
+
+  async function cloudAuth(mode) {
+    const email = els.cloudEmail.value.trim();
+    const pass = els.cloudPass.value;
+    if (!email || !pass) { cloudMsg('E-posta ve şifre gerekli'); return; }
+    cloudMsg('...');
+    try {
+      const { data, error } = mode === 'signup' ? await Cloud.signUp(email, pass) : await Cloud.signIn(email, pass);
+      if (error) { cloudMsg('Hata: ' + error.message); return; }
+      if (mode === 'signup' && !(data && data.session)) cloudMsg('Kayıt oldu — e-posta onayı gerekiyor olabilir.', true);
+      else cloudMsg('', true);
+    } catch (e) { cloudMsg('Hata: ' + (e.message || e)); }
+  }
+
+  async function cloudSave() {
+    const nick = (els.cloudNick.value || '').trim() || 'Madenci';
+    try { localStorage.setItem(NICK_KEY, nick); } catch (e) { /* yok */ }
+    cloudMsg('Kaydediliyor...');
+    try {
+      saveGame();
+      await Cloud.saveToCloud(nick);
+      cloudMsg('☁️ Buluta kaydedildi', true);
+      showToast('☁️ Buluta kaydedildi');
+      refreshLeaderboard();
+    } catch (e) { cloudMsg('Kayıt hatası: ' + (e.message || e)); }
+  }
+
+  async function cloudLoad() {
+    if (!confirm('Buluttaki kayıt yüklenecek; mevcut ilerlemenin üzerine yazılır. Emin misin?')) return;
+    cloudMsg('Yükleniyor...');
+    try {
+      const data = await Cloud.loadFromCloud();
+      if (!data) { cloudMsg('Bulutta kayıt bulunamadı'); return; }
+      applySaveData(data);
+      saveGame();
+      sync();
+      cloudMsg('⬇️ Buluttan yüklendi', true);
+      showToast('⬇️ Buluttan yüklendi');
+    } catch (e) { cloudMsg('Yükleme hatası: ' + (e.message || e)); }
+  }
+
+  function syncCloud() {
+    const user = Cloud.getUser();
+    const inLog = !!user;
+    els.cloudLoggedin.classList.toggle('hidden', !inLog);
+    els.cloudLoggedout.classList.toggle('hidden', inLog);
+    if (inLog) cloudMsg('Giriş: ' + user.email, true);
+    refreshLeaderboard();
+  }
+
+  async function refreshLeaderboard() {
+    if (!Cloud.isReady()) return;
+    try {
+      const list = await Cloud.fetchLeaderboard(20);
+      renderLeaderboard(list);
+    } catch (e) { /* sessizce geç */ }
+  }
+
+  function renderLeaderboard(list) {
+    els.leaderboard.innerHTML = '';
+    if (!list.length) { els.leaderboard.innerHTML = '<div class="lb-empty">Henüz skor yok — ilk sen ol!</div>'; return; }
+    const me = Cloud.getUser();
+    list.forEach((row, i) => {
+      const div = document.createElement('div');
+      div.className = 'lb-row' + (me && row.user_id === me.id ? ' me' : '');
+      const rank = document.createElement('span'); rank.className = 'lb-rank'; rank.textContent = '#' + (i + 1);
+      const name = document.createElement('span'); name.className = 'lb-name'; name.textContent = row.nickname; // textContent → XSS yok
+      const gems = document.createElement('span'); gems.className = 'lb-gems'; gems.textContent = '💎 ' + formatNum(row.gems);
+      div.appendChild(rank); div.appendChild(name); div.appendChild(gems);
+      els.leaderboard.appendChild(div);
+    });
   }
 
   let autoClickRow, autoBuyRow;

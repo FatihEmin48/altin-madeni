@@ -219,27 +219,31 @@ function saveGame() {
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(game)); } catch (e) { /* yok */ }
 }
 
+// Bir kayıt objesini (localStorage ya da bulut) mevcut duruma uygular.
+function applySaveData(d) {
+  if (!d || typeof d !== 'object') return false;
+  const s = createState();
+  s.gold = +d.gold || 0;
+  s.totalGold = +d.totalGold || 0;
+  s.gems = +d.gems || 0;
+  if (Array.isArray(d.achievements)) s.achievements = d.achievements.filter(id => ACHIEVEMENTS.some(a => a.id === id));
+  s.autoClicker = !!d.autoClicker;
+  s.autoBuyer = !!d.autoBuyer;
+  s.autoBuyerOn = d.autoBuyerOn !== false;
+  s.playtime = +d.playtime || 0;
+  s.clicks = +d.clicks || 0;
+  s.lastSave = +d.lastSave || Date.now();
+  if (d.gens && typeof d.gens === 'object') for (const g of GENERATORS) s.gens[g.id] = +d.gens[g.id] || 0;
+  if (Array.isArray(d.upgrades)) s.upgrades = d.upgrades.filter(id => UPGRADES.some(u => u.id === id));
+  game = s;
+  return true;
+}
+
 function loadGame() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return false;
-    const d = JSON.parse(raw);
-    if (!d || typeof d !== 'object') return false;
-    const s = createState();
-    s.gold = +d.gold || 0;
-    s.totalGold = +d.totalGold || 0;
-    s.gems = +d.gems || 0;
-    if (Array.isArray(d.achievements)) s.achievements = d.achievements.filter(id => ACHIEVEMENTS.some(a => a.id === id));
-    s.autoClicker = !!d.autoClicker;
-    s.autoBuyer = !!d.autoBuyer;
-    s.autoBuyerOn = d.autoBuyerOn !== false;
-    s.playtime = +d.playtime || 0;
-    s.clicks = +d.clicks || 0;
-    s.lastSave = +d.lastSave || Date.now();
-    if (d.gens && typeof d.gens === 'object') for (const g of GENERATORS) s.gens[g.id] = +d.gens[g.id] || 0;
-    if (Array.isArray(d.upgrades)) s.upgrades = d.upgrades.filter(id => UPGRADES.some(u => u.id === id));
-    game = s;
-    return true;
+    return applySaveData(JSON.parse(raw));
   } catch (e) {
     return false;
   }

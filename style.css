@@ -139,6 +139,38 @@ section h2 { font-size: 16px; color: var(--gold2); margin: 0 0 8px; }
 .auto-state.on { color: var(--ok); font-weight: bold; }
 .auto-state.off { color: #e74c3c; font-weight: bold; }
 
+/* --- Online / bulut --- */
+#cloud-auth input {
+  width: 100%; margin-bottom: 6px; padding: 9px 10px;
+  background: var(--panel); color: var(--text);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; font-size: 14px;
+}
+.cloud-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.cloud-btns button {
+  flex: 1; min-width: 110px;
+  background: var(--gold); color: #1c160c; border: none;
+  padding: 9px 12px; border-radius: 6px; font-weight: bold; cursor: pointer;
+}
+.cloud-btns button.ghost { background: transparent; color: var(--text); border: 1px solid rgba(255,255,255,0.2); }
+#cloud-status { font-size: 13px; margin-bottom: 8px; min-height: 16px; color: var(--muted); }
+#cloud-status.ok { color: var(--ok); }
+#cloud-status.err { color: #e74c3c; }
+#cloud-loggedin.hidden, #cloud-loggedout.hidden { display: none; }
+
+.lb-title { font-size: 15px; color: var(--gold2); margin: 14px 0 8px; display: flex; align-items: center; gap: 8px; }
+.mini { background: var(--panel2); color: var(--text); border: 1px solid rgba(255,255,255,0.15); padding: 3px 10px; border-radius: 5px; font-size: 12px; cursor: pointer; }
+#leaderboard { display: flex; flex-direction: column; gap: 4px; }
+.lb-row {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--panel); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px; padding: 7px 10px; font-size: 14px;
+}
+.lb-row.me { border-color: var(--gold); background: rgba(241,196,15,0.1); }
+.lb-rank { color: var(--muted); font-weight: bold; width: 34px; }
+.lb-name { flex: 1; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-gems { color: var(--gold); font-weight: bold; }
+.lb-empty { color: var(--muted); font-size: 13px; text-align: center; padding: 10px; }
+
 /* --- İstatistikler --- */
 #stats {
   background: var(--panel); border: 1px solid rgba(255,255,255,0.08);
