@@ -472,7 +472,14 @@ const UI = (function () {
       const r = genRows[g.id];
       const owned = game.gens[g.id] || 0;
       r.owned.textContent = owned > 0 ? `(${owned})` : '';
-      r.prod.textContent = `${formatNum(g.baseProd)}/sn · toplam ${formatNum(genProduction(g.id))}/sn`;
+      let msText = '';
+      if (owned > 0) {
+        const cnt = genMilestoneCount(g.id);
+        if (cnt > 0) msText += ` · 🏁×${formatNum(Math.pow(MILESTONE_MULT, cnt))}`;
+        const nx = nextMilestone(g.id);
+        if (nx != null) msText += ` <span class="ms-next">(→${nx})</span>`;
+      }
+      r.prod.innerHTML = `${formatNum(g.baseProd)}/sn · toplam ${formatNum(genProduction(g.id))}/sn${msText}`;
       const count = buyAmount === 'max' ? Math.max(1, genMaxAffordable(g.id)) : buyAmount;
       const cost = genBulkCost(g.id, count);
       const label = buyAmount === 'max' ? `Al ×${genMaxAffordable(g.id)}` : `Al ×${count}`;

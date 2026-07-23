@@ -133,6 +133,7 @@ section h2 { font-size: 16px; color: var(--gold2); margin: 0 0 8px; }
 .gen-name { font-weight: bold; }
 .gen-owned { color: var(--gold); }
 .gen-prod { font-size: 12px; color: var(--muted); }
+.ms-next { color: var(--gold2); opacity: 0.7; }
 .gen-buy { text-align: right; white-space: nowrap; }
 .buy-label { font-size: 12px; color: var(--muted); }
 .buy-cost { color: var(--gold); font-weight: bold; }

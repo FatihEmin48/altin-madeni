@@ -87,6 +87,12 @@ const ACHIEVEMENTS = [
   { id: 'gen500',    name: 'Maden İmparatoru', desc: 'Toplam 500 üretici',    check: g => GENERATORS.reduce((s, x) => s + (g.gens[x.id] || 0), 0) >= 500 },
 ];
 
+// Üretici kilometre taşları: bir üreticiden belirli sayıda toplanınca o
+// üreticinin üretimi kalıcı olarak MILESTONE_MULT ile çarpılır (her eşikte bir
+// kez). Tek üreticiye yatırımı ödüllendirir. Türetilmiştir → kayıt gerektirmez.
+const GEN_MILESTONES = [25, 50, 100, 150, 200, 250, 300, 400, 500];
+const MILESTONE_MULT = 2;
+
 const BASE_CLICK = 1;         // yükseltmesiz tıklama başına altın
 // Kritik tıklama: elle KAZ!'a her tıklamada CRIT_CHANCE olasılıkla vuruş
 // "kritik" olur ve altın CRIT_MULT ile çarpılır. Aktif oynamayı ödüllendirir;

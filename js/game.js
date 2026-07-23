@@ -108,11 +108,28 @@ function checkAchievements() {
   return newly;
 }
 
+// --- Üretici kilometre taşları ---
+// Bir üreticide aşılan eşik sayısı (sahip olunan adede göre).
+function genMilestoneCount(genId) {
+  const owned = game.gens[genId] || 0;
+  let c = 0;
+  for (const t of GEN_MILESTONES) if (owned >= t) c++;
+  return c;
+}
+// O üreticiye uygulanan kilometre taşı çarpanı (her eşikte ×MILESTONE_MULT).
+function getGenMilestoneMult(genId) { return Math.pow(MILESTONE_MULT, genMilestoneCount(genId)); }
+// Ulaşılacak bir sonraki eşik (UI ipucu), hepsi aşıldıysa null.
+function nextMilestone(genId) {
+  const owned = game.gens[genId] || 0;
+  for (const t of GEN_MILESTONES) if (owned < t) return t;
+  return null;
+}
+
 // Tek bir üreticinin saniyelik üretimi (sahip olunan × taban × çarpanlar).
 function genProduction(genId) {
   const def = GENERATORS.find(g => g.id === genId);
   const owned = game.gens[genId] || 0;
-  return owned * def.baseProd * getGenMult(genId) * getGlobalProdMult() * getGemShopProdMult() * getPrestigeMult() * getAchievementMult() * getFrenzyMult();
+  return owned * def.baseProd * getGenMilestoneMult(genId) * getGenMult(genId) * getGlobalProdMult() * getGemShopProdMult() * getPrestigeMult() * getAchievementMult() * getFrenzyMult();
 }
 
 // Toplam altın/saniye.

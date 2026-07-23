@@ -10,6 +10,7 @@ Tarayıcıda oynanan bir **idle / artırımlı (incremental)** oyun. Saf HTML5 +
 - **Ses:** Tıklama, kritik, satın alma, külçe, başarım ve yeniden doğuş için dosyasız (Web Audio) efektler. Sağ üstteki 🔊 düğmesiyle aç/kapatılır (tercih hatırlanır).
 - **Üreticiler** (Kazmacı, Matkap, Vagon... ta ki 🌋 Magma Kuyusu ve 🪐 Yörünge Madeni'ne kadar 10 kademe) satın al; her biri saniyede otomatik altın üretir. Maliyet her alımda %15 artar.
 - **Alım miktarı** (×1 / ×10 / Max) ile toplu alım yap.
+- **Kilometre taşları:** Bir üreticiden 25 / 50 / 100 / 150 / 200 / 250 / 300 / 400 / 500 adet topladıkça o üreticinin üretimi kalıcı olarak **×2** olur (her eşikte bir kez). Satırdaki 🏁 rozeti ve `(→sonraki)` ipucuyla gösterilir.
 - **Yükseltmeler** tıklama gücünü ya da üretimi çarpar (tek seferlik).
 - **Başarımlar** (tıklama/altın/üretici kilometre taşları) açıldıkça bildirim çıkar ve her biri tüm üretime kalıcı **+%1** ekler.
 - **Altın külçesi:** Ara sıra ekranda parlayan bir külçe belirir; tıklarsan ya toplu **bonus altın** ya da geçici **Altın Hücumu** (üretim ×7, 15 sn) kazanırsın. Aktif oynamayı ödüllendirir.
