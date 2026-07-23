@@ -287,6 +287,19 @@ function importSave(text) {
   }
 }
 
+// İki kayıt durumunu "ilerleme"ye göre kıyaslar (bulut üzerine yazma koruması).
+// Dönüş > 0: a daha ileri, < 0: b daha ileri, 0: denk. Ölçüt sırası: ömür boyu
+// toplam altın (geri sarmaz) → elmas → son kayıt zamanı (lastSave).
+function compareProgress(a, b) {
+  const at = +(a && a.totalGold) || 0, bt = +(b && b.totalGold) || 0;
+  if (at !== bt) return at > bt ? 1 : -1;
+  const ag = +(a && a.gems) || 0, bg = +(b && b.gems) || 0;
+  if (ag !== bg) return ag > bg ? 1 : -1;
+  const al = +(a && a.lastSave) || 0, bl = +(b && b.lastSave) || 0;
+  if (al !== bl) return al > bl ? 1 : -1;
+  return 0;
+}
+
 function hardReset() {
   game = createState();
   saveGame();

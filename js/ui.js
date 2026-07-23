@@ -130,12 +130,31 @@ const UI = (function () {
     } catch (e) { cloudMsg('Hata: ' + (e.message || e)); }
   }
 
+  // İki durumun ilerleme özetini uyarı metni için biçimler.
+  function progressLine(s) {
+    return `💎 ${formatNum((s && s.gems) || 0)} · toplam ${formatNum((s && s.totalGold) || 0)} altın`;
+  }
+
   async function cloudSave() {
     const nick = (els.cloudNick.value || '').trim() || 'Madenci';
     try { localStorage.setItem(NICK_KEY, nick); } catch (e) { /* yok */ }
     cloudMsg('Kaydediliyor...');
     try {
       saveGame();
+      // Üzerine yazma koruması: buluttaki kayıt seninkinden ileriyse uyar.
+      let cloudData = null;
+      try { cloudData = await Cloud.loadFromCloud(); } catch (e) { cloudData = null; }
+      if (cloudData && compareProgress(game, cloudData) < 0) {
+        const ok = confirm(
+          `⚠️ Buluttaki kayıt seninkinden daha İLERİ görünüyor:\n\n` +
+          `Bulut:  ${progressLine(cloudData)}\n` +
+          `Senin:  ${progressLine(game)}\n\n` +
+          `Üzerine yazarsan buluttaki ileri kayıt SİLİNİR. ` +
+          `(Genelde bu cihazda önce "⬇️ Buluttan Yükle" demelisin.)\n\n` +
+          `Yine de üzerine yazılsın mı?`
+        );
+        if (!ok) { cloudMsg('Kayıt iptal edildi — buluttaki ileri kayıt korundu.'); return; }
+      }
       await Cloud.saveToCloud(nick);
       cloudMsg('☁️ Buluta kaydedildi', true);
       showToast('☁️ Buluta kaydedildi');
@@ -144,14 +163,23 @@ const UI = (function () {
   }
 
   async function cloudLoad() {
-    if (!confirm('Buluttaki kayıt yüklenecek; mevcut ilerlemenin üzerine yazılır. Emin misin?')) return;
     cloudMsg('Yükleniyor...');
     try {
       const data = await Cloud.loadFromCloud();
       if (!data) { cloudMsg('Bulutta kayıt bulunamadı'); return; }
+      // Geri gitme koruması: buluttaki kayıt seninkinden geriyse ekstra uyar.
+      const behind = compareProgress(data, game) < 0;
+      const msg = behind
+        ? `⚠️ Buluttaki kayıt seninkinden daha GERİ görünüyor:\n\n` +
+          `Bulut:  ${progressLine(data)}\n` +
+          `Senin:  ${progressLine(game)}\n\n` +
+          `Yüklersen mevcut ilerlemen GERİLER. Yine de yüklensin mi?`
+        : 'Buluttaki kayıt yüklenecek; mevcut ilerlemenin üzerine yazılır. Emin misin?';
+      if (!confirm(msg)) { cloudMsg('Yükleme iptal edildi.'); return; }
       applySaveData(data);
       saveGame();
       sync();
+      syncAchievements();
       cloudMsg('⬇️ Buluttan yüklendi', true);
       showToast('⬇️ Buluttan yüklendi');
     } catch (e) { cloudMsg('Yükleme hatası: ' + (e.message || e)); }
