@@ -16,6 +16,7 @@ Tarayıcıda oynanan bir **idle / artırımlı (incremental)** oyun. Saf HTML5 +
 - **Yükseltmeler** tıklama gücünü ya da üretimi çarpar (tek seferlik).
 - **Başarımlar** (tıklama/altın/üretici kilometre taşları) açıldıkça bildirim çıkar ve her biri tüm üretime kalıcı **+%1** ekler.
 - **Altın külçesi:** Ara sıra ekranda parlayan bir külçe belirir; tıklarsan ya toplu **bonus altın** ya da geçici **Altın Hücumu** (üretim ×7, 15 sn) kazanırsın. Aktif oynamayı ödüllendirir.
+- **Mini etkinlikler:** Oynarken ara sıra kendiliğinden süreli etkinlikler başlar — Maden Şenliği (üretim ×2), Pazar Yükselişi (×2.5), Altın Damarı (×3), Tıklama Ateşi (tıklama ×5). Üstte bir afişle gösterilir ve diğer çarpanlarla birlikte katlanır.
 - **Otomasyon:** **Oto-Tıklayıcı** (saniyede otomatik kazar) ve **Oto-Alıcı** (açık/kapalı; en ucuz üreticiyi otomatik satın alır) satın alınabilir.
 - **İstatistikler:** Toplam altın, altın/sn, tıklama, elmas/bonuslar, üretici sayısı, oynama süresi.
 - **Kaydı yedekle:** Kaydını tek bir metin kodu olarak **dışa aktar** (panoya kopyalanır — yedekle ya da başka cihaza taşı) ya da bir kodu **içe aktar**. Bulut girişi gerektirmez; bozuk/geçersiz kod güvenle reddedilir.

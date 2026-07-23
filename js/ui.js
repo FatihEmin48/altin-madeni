@@ -31,6 +31,7 @@ const UI = (function () {
     els.achCount = document.getElementById('ach-count');
     els.toast = document.getElementById('toast');
     els.frenzyBanner = document.getElementById('frenzy-banner');
+    els.eventBanner = document.getElementById('event-banner');
     els.automation = document.getElementById('automation');
     els.stats = document.getElementById('stats');
     els.cloudStatus = document.getElementById('cloud-status');
@@ -413,6 +414,26 @@ const UI = (function () {
     }
   }
 
+  function syncEvent() {
+    const d = activeEvent();
+    if (d) {
+      setHTML(els.eventBanner, `${d.icon} ${d.name} · ${d.desc} · ${Math.ceil(game.eventLeft)}sn`);
+      els.eventBanner.classList.remove('hidden');
+    } else {
+      els.eventBanner.classList.add('hidden');
+    }
+  }
+
+  // main.js zamanlayıcısı çağırır: etkinlik yoksa rastgele birini başlatır.
+  function triggerEvent() {
+    const d = triggerRandomEvent();
+    if (d) {
+      Sound.play('nugget');
+      showToast(`${d.icon} Etkinlik: <b>${d.name}</b> — ${d.desc} (${d.dur}sn)`);
+      syncEvent();
+    }
+  }
+
   function backupMsg(text, ok) {
     els.backupStatus.textContent = text || '';
     els.backupStatus.className = ok ? 'ok' : (text ? 'err' : '');
@@ -574,6 +595,7 @@ const UI = (function () {
     syncPrestige();
     syncGemShop();
     syncFrenzy();
+    syncEvent();
     syncAutomation();
     syncStats();
 
@@ -596,5 +618,5 @@ const UI = (function () {
     els.offlinePopup.classList.remove('hidden');
   }
 
-  return { init, sync, flashSaved, showOffline, spawnNugget, autoCloudSave, autoCloudLoad };
+  return { init, sync, flashSaved, showOffline, spawnNugget, autoCloudSave, autoCloudLoad, triggerEvent };
 })();

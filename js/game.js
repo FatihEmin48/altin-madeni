@@ -12,6 +12,8 @@ function createState() {
     gemShop: {},    // elmas dükkânı seviyeleri (id → seviye)
     achievements: [], // açılan başarım id'leri (kalıcı)
     frenzyLeft: 0,  // "Altın Hücumu" kalan süre (sn), geçici — kaydedilmez
+    eventId: null,  // aktif mini etkinlik id'si (geçici — kaydedilmez)
+    eventLeft: 0,   // aktif etkinliğin kalan süresi (sn)
     autoClicker: false, // oto-tıklayıcı alındı mı
     autoBuyer: false,   // oto-alıcı alındı mı
     autoBuyerOn: true,  // oto-alıcı açık mı
@@ -82,7 +84,35 @@ function getAchievementMult() { return 1 + game.achievements.length * ACH_BONUS;
 // Altın Hücumu aktifken geçici üretim çarpanı.
 function getFrenzyMult() { return game.frenzyLeft > 0 ? NUGGET.frenzyMult : 1; }
 
-function getClickValue() { return BASE_CLICK * getClickMult() * getPrestigeMult() * getAchievementMult() * getFrenzyMult(); }
+// --- Rastgele mini etkinlikler ---
+function getEventDef(id) { return EVENTS.list.find(e => e.id === id) || null; }
+function activeEvent() { return (game.eventLeft > 0 && game.eventId) ? getEventDef(game.eventId) : null; }
+function getEventProdMult() { const d = activeEvent(); return (d && d.prodMult) ? d.prodMult : 1; }
+function getEventClickMult() { const d = activeEvent(); return (d && d.clickMult) ? d.clickMult : 1; }
+// Ağırlıklı rastgele etkinlik seç.
+function pickRandomEvent() {
+  const list = EVENTS.list;
+  let total = 0;
+  for (const e of list) total += e.weight;
+  let r = Math.random() * total;
+  for (const e of list) { r -= e.weight; if (r < 0) return e; }
+  return list[list.length - 1];
+}
+// Belirli etkinliği başlat (süresini ayarlar). Dönüş: etkinlik tanımı.
+function startEvent(id) {
+  const def = getEventDef(id);
+  if (!def) return null;
+  game.eventId = id;
+  game.eventLeft = def.dur;
+  return def;
+}
+// Zaten etkinlik yoksa rastgele birini başlatır (main.js zamanlayıcısı çağırır).
+function triggerRandomEvent() {
+  if (game.eventLeft > 0) return null;
+  return startEvent(pickRandomEvent().id);
+}
+
+function getClickValue() { return BASE_CLICK * getClickMult() * getPrestigeMult() * getAchievementMult() * getFrenzyMult() * getEventClickMult(); }
 
 // Altın külçesine tıklanınca çağrılır: %50 toplu bonus altın, %50 Altın Hücumu.
 function grantNugget() {
@@ -129,7 +159,7 @@ function nextMilestone(genId) {
 function genProduction(genId) {
   const def = GENERATORS.find(g => g.id === genId);
   const owned = game.gens[genId] || 0;
-  return owned * def.baseProd * getGenMilestoneMult(genId) * getGenMult(genId) * getGlobalProdMult() * getGemShopProdMult() * getPrestigeMult() * getAchievementMult() * getFrenzyMult();
+  return owned * def.baseProd * getGenMilestoneMult(genId) * getGenMult(genId) * getGlobalProdMult() * getGemShopProdMult() * getPrestigeMult() * getAchievementMult() * getFrenzyMult() * getEventProdMult();
 }
 
 // Toplam altın/saniye.
@@ -246,6 +276,10 @@ function toggleAutoBuyer() { game.autoBuyerOn = !game.autoBuyerOn; return game.a
 function tick(dt) {
   game.playtime += dt;
   if (game.frenzyLeft > 0) game.frenzyLeft = Math.max(0, game.frenzyLeft - dt);
+  if (game.eventLeft > 0) {
+    game.eventLeft = Math.max(0, game.eventLeft - dt);
+    if (game.eventLeft === 0) game.eventId = null;
+  }
 
   if (game.autoClicker) {
     const c = AUTOMATION.autoClickRate * dt;      // saniyede autoClickRate tıklama

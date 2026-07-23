@@ -261,6 +261,17 @@ section h2 { font-size: 16px; color: var(--gold2); margin: 0 0 8px; }
 }
 #frenzy-banner.hidden { display: none; }
 
+#event-banner {
+  position: fixed; top: 0; left: 0; right: 0;
+  background: linear-gradient(90deg, #2980b9, #27ae60, #2980b9);
+  color: #062012; font-weight: bold; text-align: center;
+  padding: 6px; z-index: 179; font-size: 15px;
+  box-shadow: 0 2px 10px rgba(39,174,96,0.5);
+}
+#event-banner.hidden { display: none; }
+/* İkisi de aktifse etkinlik afişini hücum afişinin altına kaydır. */
+#frenzy-banner:not(.hidden) ~ #event-banner:not(.hidden) { top: 32px; }
+
 /* --- Toast --- */
 #toast {
   position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-20px);

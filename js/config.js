@@ -115,6 +115,19 @@ const AUTOMATION = {
   autoBuyerCost: 2e6,   autoBuyInterval: 1.0,
 };
 
+// Rastgele mini etkinlikler: oynarken ara sıra kendiliğinden başlayan süreli
+// çarpanlar (üretim ya da tıklama). weight = seçilme ağırlığı. Frenzy'den ayrı
+// bir sistemdir ve onunla çarpım olarak birikir.
+const EVENTS = {
+  minInterval: 120, maxInterval: 240, // etkinlik beliriş aralığı (sn)
+  list: [
+    { id: 'senlik', icon: '🎉', name: 'Maden Şenliği',   desc: 'Üretim ×2',   dur: 30, prodMult: 2,   weight: 3 },
+    { id: 'pazar',  icon: '📈', name: 'Pazar Yükselişi', desc: 'Üretim ×2.5', dur: 25, prodMult: 2.5, weight: 2 },
+    { id: 'damar',  icon: '💰', name: 'Altın Damarı',    desc: 'Üretim ×3',   dur: 20, prodMult: 3,   weight: 2 },
+    { id: 'ates',   icon: '🔥', name: 'Tıklama Ateşi',   desc: 'Tıklama ×5',  dur: 20, clickMult: 5, weight: 2 },
+  ],
+};
+
 const OFFLINE_MAX_SEC = 8 * 3600; // en fazla 8 saatlik offline kazanç
 const OFFLINE_RATE = 0.5;     // offline kazanç, aktif üretimin %50'si
 const AUTOSAVE_SEC = 15;      // yerel (localStorage) otomatik kayıt aralığı

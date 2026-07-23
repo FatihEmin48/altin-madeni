@@ -7,6 +7,7 @@ let uiAccum = 0;
 let saveAccum = 0;
 let cloudSaveAccum = 0;
 let nuggetTimer = 0;
+let eventTimer = 0;
 
 function randRangeSec(a, b) { return a + Math.random() * (b - a); }
 // Bir sonraki külçe gecikmesi — "Altın Sezgi" yükseltmesi aralığı kısaltır.
@@ -24,6 +25,13 @@ function frame(now) {
   if (nuggetTimer <= 0) {
     UI.spawnNugget();
     nuggetTimer = nextNuggetDelay();
+  }
+
+  // Rastgele mini etkinlik zamanlayıcısı.
+  eventTimer -= Math.min(dt, 5);
+  if (eventTimer <= 0) {
+    UI.triggerEvent();
+    eventTimer = randRangeSec(EVENTS.minInterval, EVENTS.maxInterval);
   }
 
   uiAccum += dt;
@@ -62,6 +70,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   nuggetTimer = nextNuggetDelay();
+  eventTimer = randRangeSec(EVENTS.minInterval, EVENTS.maxInterval);
   lastTime = performance.now();
   requestAnimationFrame(frame);
 });
