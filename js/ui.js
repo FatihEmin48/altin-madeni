@@ -7,6 +7,11 @@ const UI = (function () {
   const upRows = {};
   const gemRows = {};
 
+  // innerHTML'i yalnızca DEĞİŞTİĞİNDE yazar. sync() 10/sn çalıştığı için
+  // değişmeyen satırları her karede yeniden kurmak (özellikle mobilde) ana iş
+  // parçacığını doldurup dokunmayı geciktiriyordu; bu onu önler.
+  function setHTML(el, html) { if (el.__h !== html) { el.__h = html; el.innerHTML = html; } }
+
   function init() {
     els.gold = document.getElementById('gold');
     els.gps = document.getElementById('gps');
@@ -243,20 +248,20 @@ const UI = (function () {
   function syncAutomation() {
     // Oto-tıklayıcı
     if (game.autoClicker) {
-      autoClickRow.innerHTML = `<div class="auto-name">🖱️ Oto-Tıklayıcı</div><div class="auto-state on">✓ Aktif · ${AUTOMATION.autoClickRate}/sn</div>`;
+      setHTML(autoClickRow, `<div class="auto-name">🖱️ Oto-Tıklayıcı</div><div class="auto-state on">✓ Aktif · ${AUTOMATION.autoClickRate}/sn</div>`);
       autoClickRow.classList.add('done'); autoClickRow.disabled = true;
     } else {
-      autoClickRow.innerHTML = `<div class="auto-name">🖱️ Oto-Tıklayıcı</div><div class="auto-desc">Saniyede ${AUTOMATION.autoClickRate} otomatik kaz</div><div class="auto-cost">🪙 ${formatNum(AUTOMATION.autoClickCost)}</div>`;
+      setHTML(autoClickRow, `<div class="auto-name">🖱️ Oto-Tıklayıcı</div><div class="auto-desc">Saniyede ${AUTOMATION.autoClickRate} otomatik kaz</div><div class="auto-cost">🪙 ${formatNum(AUTOMATION.autoClickCost)}</div>`);
       const afford = game.gold >= AUTOMATION.autoClickCost;
       autoClickRow.classList.toggle('locked', !afford); autoClickRow.disabled = !afford;
     }
     // Oto-alıcı
     if (game.autoBuyer) {
       const on = game.autoBuyerOn;
-      autoBuyRow.innerHTML = `<div class="auto-name">🛒 Oto-Alıcı</div><div class="auto-state ${on ? 'on' : 'off'}">${on ? 'Açık' : 'Kapalı'} (değiştir)</div>`;
+      setHTML(autoBuyRow, `<div class="auto-name">🛒 Oto-Alıcı</div><div class="auto-state ${on ? 'on' : 'off'}">${on ? 'Açık' : 'Kapalı'} (değiştir)</div>`);
       autoBuyRow.classList.remove('locked', 'done'); autoBuyRow.disabled = false;
     } else {
-      autoBuyRow.innerHTML = `<div class="auto-name">🛒 Oto-Alıcı</div><div class="auto-desc">En ucuz üreticiyi otomatik alır</div><div class="auto-cost">🪙 ${formatNum(AUTOMATION.autoBuyerCost)}</div>`;
+      setHTML(autoBuyRow, `<div class="auto-name">🛒 Oto-Alıcı</div><div class="auto-desc">En ucuz üreticiyi otomatik alır</div><div class="auto-cost">🪙 ${formatNum(AUTOMATION.autoBuyerCost)}</div>`);
       const afford = game.gold >= AUTOMATION.autoBuyerCost;
       autoBuyRow.classList.toggle('locked', !afford); autoBuyRow.disabled = !afford;
     }
@@ -277,18 +282,18 @@ const UI = (function () {
   }
 
   function syncGemShop() {
-    els.gemshopBal.innerHTML = `Harcanabilir: 💎 <b>${formatNum(game.gems)}</b>`;
+    setHTML(els.gemshopBal, `Harcanabilir: 💎 <b>${formatNum(game.gems)}</b>`);
     for (const it of GEM_SHOP) {
       const row = gemRows[it.id];
       const lvl = gemLevel(it.id);
       const maxed = lvl >= it.maxLevel;
       const head = `<div class="gem-icon">${it.icon}</div><div class="gem-info"><div class="gem-name">${it.name} <span class="gem-lvl">Sv ${lvl}/${it.maxLevel}</span></div><div class="gem-desc">${it.desc}</div></div>`;
       if (maxed) {
-        row.innerHTML = head + `<div class="gem-cost">✓ Maks</div>`;
+        setHTML(row, head + `<div class="gem-cost">✓ Maks</div>`);
         row.classList.add('done'); row.classList.remove('locked'); row.disabled = true;
       } else {
         const cost = gemUpgradeCost(it.id);
-        row.innerHTML = head + `<div class="gem-cost">💎 ${formatNum(cost)}</div>`;
+        setHTML(row, head + `<div class="gem-cost">💎 ${formatNum(cost)}</div>`);
         const afford = game.gems >= cost;
         row.classList.toggle('locked', !afford); row.classList.remove('done'); row.disabled = !afford;
       }
@@ -309,7 +314,7 @@ const UI = (function () {
       ['Açılan başarım', `${game.achievements.length}/${ACHIEVEMENTS.length}`],
       ['Oynama süresi', formatDuration(game.playtime)],
     ];
-    els.stats.innerHTML = rows.map(([k, v]) => `<div class="stat-row"><span>${k}</span><b>${v}</b></div>`).join('');
+    setHTML(els.stats, rows.map(([k, v]) => `<div class="stat-row"><span>${k}</span><b>${v}</b></div>`).join(''));
   }
 
   const achRows = {};
@@ -479,11 +484,11 @@ const UI = (function () {
         const nx = nextMilestone(g.id);
         if (nx != null) msText += ` <span class="ms-next">(→${nx})</span>`;
       }
-      r.prod.innerHTML = `${formatNum(g.baseProd)}/sn · toplam ${formatNum(genProduction(g.id))}/sn${msText}`;
+      setHTML(r.prod, `${formatNum(g.baseProd)}/sn · toplam ${formatNum(genProduction(g.id))}/sn${msText}`);
       const count = buyAmount === 'max' ? Math.max(1, genMaxAffordable(g.id)) : buyAmount;
       const cost = genBulkCost(g.id, count);
       const label = buyAmount === 'max' ? `Al ×${genMaxAffordable(g.id)}` : `Al ×${count}`;
-      r.buy.innerHTML = `<div class="buy-label">${label}</div><div class="buy-cost">🪙 ${formatNum(cost)}</div>`;
+      setHTML(r.buy, `<div class="buy-label">${label}</div><div class="buy-cost">🪙 ${formatNum(cost)}</div>`);
       const affordable = game.gold >= cost && (buyAmount !== 'max' || genMaxAffordable(g.id) > 0);
       r.row.classList.toggle('locked', !affordable);
       r.row.disabled = !affordable;
