@@ -201,8 +201,45 @@ const UI = (function () {
     const inLog = !!user;
     els.cloudLoggedin.classList.toggle('hidden', !inLog);
     els.cloudLoggedout.classList.toggle('hidden', inLog);
-    if (inLog) cloudMsg('Giriş: ' + user.email, true);
+    if (inLog) { cloudMsg('Giriş: ' + user.email, true); autoCloudLoad(); }
     refreshLeaderboard();
+  }
+
+  // --- Otomatik bulut senkron (v13) ---
+  // Aynı anda birden fazla ağ işlemini engeller (yükle/kaydet çakışmasın).
+  let cloudSyncBusy = false;
+
+  // Buluttaki kayıt bu cihazınkinden İLERİYSE sessizce çeker (açılışta ve
+  // sekmeye geri dönünce çağrılır → "hangi cihazda açarsam güncelini görürüm").
+  async function autoCloudLoad() {
+    if (cloudSyncBusy || !Cloud.isReady() || !Cloud.getUser()) return;
+    cloudSyncBusy = true;
+    try {
+      const data = await Cloud.loadFromCloud();
+      if (data && compareProgress(data, game) > 0) {
+        applySaveData(data);
+        saveGame();
+        sync();
+        syncAchievements();
+        showToast('☁️ Buluttan güncel kayıt yüklendi');
+        cloudMsg('☁️ Buluttan güncel kayıt yüklendi', true);
+      }
+    } catch (e) { /* sessiz — ağ hatası oyunu bozmasın */ }
+    finally { cloudSyncBusy = false; }
+  }
+
+  // Yerel durumu sessizce buluta yazar (periyodik + sekme gizlenince/kapanınca).
+  async function autoCloudSave() {
+    if (cloudSyncBusy || !Cloud.isReady() || !Cloud.getUser()) return;
+    cloudSyncBusy = true;
+    try {
+      saveGame();
+      let nick = 'Madenci';
+      try { nick = localStorage.getItem(NICK_KEY) || 'Madenci'; } catch (e) { /* yok */ }
+      await Cloud.saveToCloud(nick);
+      cloudMsg('☁️ Otomatik kaydedildi', true);
+    } catch (e) { /* sessiz */ }
+    finally { cloudSyncBusy = false; }
   }
 
   async function refreshLeaderboard() {
@@ -559,5 +596,5 @@ const UI = (function () {
     els.offlinePopup.classList.remove('hidden');
   }
 
-  return { init, sync, flashSaved, showOffline, spawnNugget };
+  return { init, sync, flashSaved, showOffline, spawnNugget, autoCloudSave, autoCloudLoad };
 })();

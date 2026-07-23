@@ -117,4 +117,5 @@ const AUTOMATION = {
 
 const OFFLINE_MAX_SEC = 8 * 3600; // en fazla 8 saatlik offline kazanç
 const OFFLINE_RATE = 0.5;     // offline kazanç, aktif üretimin %50'si
-const AUTOSAVE_SEC = 15;
+const AUTOSAVE_SEC = 15;      // yerel (localStorage) otomatik kayıt aralığı
+const CLOUD_AUTOSAVE_SEC = 45; // girişliyken buluta otomatik kayıt aralığı

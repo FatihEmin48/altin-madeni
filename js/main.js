@@ -5,6 +5,7 @@
 let lastTime = 0;
 let uiAccum = 0;
 let saveAccum = 0;
+let cloudSaveAccum = 0;
 let nuggetTimer = 0;
 
 function randRangeSec(a, b) { return a + Math.random() * (b - a); }
@@ -31,6 +32,11 @@ function frame(now) {
   saveAccum += dt;
   if (saveAccum >= AUTOSAVE_SEC) { saveGame(); UI.flashSaved(); saveAccum = 0; }
 
+  // Periyodik otomatik bulut kaydı (girişli değilse içeride sessizce atlanır).
+  // rAF sekme gizliyken durduğu için bu sadece görünür sekmede işler.
+  cloudSaveAccum += dt;
+  if (cloudSaveAccum >= CLOUD_AUTOSAVE_SEC) { UI.autoCloudSave(); cloudSaveAccum = 0; }
+
   requestAnimationFrame(frame);
 }
 
@@ -48,8 +54,12 @@ window.addEventListener('DOMContentLoaded', () => {
   UI.sync();
 
   // Sekme kapanınca / arka plana atılınca kaydet (offline sayacı doğru olsun).
-  window.addEventListener('beforeunload', saveGame);
-  document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
+  // Ayrıca buluta otomatik yaz; sekmeye geri dönünce buluttan güncelini çek.
+  window.addEventListener('beforeunload', () => { saveGame(); UI.autoCloudSave(); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { saveGame(); UI.autoCloudSave(); }
+    else UI.autoCloudLoad();
+  });
 
   nuggetTimer = nextNuggetDelay();
   lastTime = performance.now();
