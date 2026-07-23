@@ -8,6 +8,8 @@ let saveAccum = 0;
 let nuggetTimer = 0;
 
 function randRangeSec(a, b) { return a + Math.random() * (b - a); }
+// Bir sonraki külçe gecikmesi — "Altın Sezgi" yükseltmesi aralığı kısaltır.
+function nextNuggetDelay() { return randRangeSec(NUGGET.minInterval, NUGGET.maxInterval) * getNuggetIntervalMult(); }
 
 function frame(now) {
   const dt = (now - lastTime) / 1000;
@@ -20,7 +22,7 @@ function frame(now) {
   nuggetTimer -= Math.min(dt, 5);
   if (nuggetTimer <= 0) {
     UI.spawnNugget();
-    nuggetTimer = randRangeSec(NUGGET.minInterval, NUGGET.maxInterval);
+    nuggetTimer = nextNuggetDelay();
   }
 
   uiAccum += dt;
@@ -49,7 +51,7 @@ window.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('beforeunload', saveGame);
   document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
 
-  nuggetTimer = randRangeSec(NUGGET.minInterval, NUGGET.maxInterval);
+  nuggetTimer = nextNuggetDelay();
   lastTime = performance.now();
   requestAnimationFrame(frame);
 });

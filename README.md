@@ -18,7 +18,8 @@ Tarayıcıda oynanan bir **idle / artırımlı (incremental)** oyun. Saf HTML5 +
 - **Kaydı yedekle:** Kaydını tek bir metin kodu olarak **dışa aktar** (panoya kopyalanır — yedekle ya da başka cihaza taşı) ya da bir kodu **içe aktar**. Bulut girişi gerektirmez; bozuk/geçersiz kod güvenle reddedilir.
 - **Online (Supabase):** E-posta ile giriş/kayıt → **buluta kaydet / buluttan yükle** (cihazlar arası yedek) ve **skor tablosu** (elmasa göre ilk 20). Kurulum: `supabase/KURULUM.md` + `supabase/schema.sql`. İstemcideki `publishable` anahtar güvenlidir; erişim RLS ile korunur. **Üzerine yazma koruması:** buluttaki kayıt seninkinden ileriyken kaydetmeye (ya da geriyken yüklemeye) çalışırsan ilerlemeni yanlışlıkla silmemen için uyarı çıkar.
 - **Yeniden Doğuş (prestij):** Yeterince altın biriktirince (1M+) her şeyi sıfırlayıp kalıcı **💎 elmas** kazanırsın; her elmas tüm üretime **+%2** kalıcı çarpan verir. Elmaslar toplam kazanılan altına göre hesaplanır ve sıfırlanmaz.
-- Oyun otomatik kaydedilir (localStorage). Kapatıp döndüğünde madencilerin sen yokken de çalışır — **offline kazanç** (en fazla 8 saat, %50 verimle).
+- **Elmas Dükkânı (prestij yükseltmeleri):** Kazandığın elmasları harcayarak kalıcı, kademeli perkler al — kritik şansı/çarpanı, tüm üretim, offline verimi, külçe sıklığı, yeniden doğuşta başlangıç altını (Miras). Elmaslar iki sayaçta tutulur: **harcanabilir bakiye** (dükkân) ve **ömür boyu** (pasif +%2 bonus + skor) — yani harcamak seni geriletmez.
+- Oyun otomatik kaydedilir (localStorage). Kapatıp döndüğünde madencilerin sen yokken de çalışır — **offline kazanç** (en fazla 8 saat, %50 verimle — Gece Vardiyası yükseltmesiyle artar).
 
 ## Çalıştırma (yerelde)
 
@@ -47,4 +48,4 @@ Saf mantık (`js/game.js`) DOM'dan bağımsızdır, bu yüzden Node ile test edi
 
 ## Henüz kapsam dışı (sonraki sürümler)
 
-Arka plan müziği, kritik/şans yükseltmeleri, mini etkinlikler.
+Arka plan müziği, rastgele mini etkinlikler, günlük ödül.

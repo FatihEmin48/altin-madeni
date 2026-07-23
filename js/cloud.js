@@ -45,7 +45,7 @@ const Cloud = (function () {
     const nick = (nickname || 'Madenci').toString().slice(0, 24);
     const r2 = await sb.from('leaderboard').upsert({
       user_id: user.id, nickname: nick,
-      gems: Math.floor(game.gems), total_gold: Math.floor(game.totalGold), updated_at: now,
+      gems: Math.floor(game.gemsClaimed), total_gold: Math.floor(game.totalGold), updated_at: now,
     });
     if (r2.error) throw r2.error;
   }

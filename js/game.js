@@ -7,7 +7,9 @@ function createState() {
   return {
     gold: 0,
     totalGold: 0,   // ömür boyu üretilen (prestij eğrisini besler, sıfırlanmaz)
-    gems: 0,        // prestij parası (💎), kalıcı
+    gems: 0,        // HARCANABİLİR elmas bakiyesi (dükkânda harcanır)
+    gemsClaimed: 0, // ömür boyu kazanılan elmas (pasif bonus + skor + pendingGems)
+    gemShop: {},    // elmas dükkânı seviyeleri (id → seviye)
     achievements: [], // açılan başarım id'leri (kalıcı)
     frenzyLeft: 0,  // "Altın Hücumu" kalan süre (sn), geçici — kaydedilmez
     autoClicker: false, // oto-tıklayıcı alındı mı
@@ -42,8 +44,39 @@ function getGenMult(genId) {
   return m;
 }
 
-// Prestij çarpanı: sahip olunan her elmas tüm üretime +GEM_BONUS.
-function getPrestigeMult() { return 1 + game.gems * GEM_BONUS; }
+// Prestij çarpanı: ömür boyu kazanılan her elmas tüm üretime +GEM_BONUS
+// (harcamak bonusu düşürmez).
+function getPrestigeMult() { return 1 + game.gemsClaimed * GEM_BONUS; }
+
+// --- Elmas Dükkânı (prestij yükseltmeleri) ---
+function gemShopDef(id) { return GEM_SHOP.find(x => x.id === id); }
+function gemLevel(id) { return (game.gemShop && game.gemShop[id]) || 0; }
+// Bir sonraki seviyenin maliyeti (elmas). Maks seviyede Infinity.
+function gemUpgradeCost(id) {
+  const def = gemShopDef(id);
+  const lvl = gemLevel(id);
+  if (!def || lvl >= def.maxLevel) return Infinity;
+  return Math.ceil(def.baseCost * Math.pow(def.costMult, lvl));
+}
+// Harcanabilir elmas yeterse bir sonraki seviyeyi satın alır.
+function buyGemUpgrade(id) {
+  const def = gemShopDef(id);
+  if (!def) return false;
+  const cost = gemUpgradeCost(id);
+  if (gemLevel(id) >= def.maxLevel || game.gems < cost) return false;
+  game.gems -= cost;
+  game.gemShop[id] = gemLevel(id) + 1;
+  return true;
+}
+// Dükkân etkileri (getter'lar): seviyeye göre türetilir.
+function getCritChance() { return Math.min(0.95, CRIT_CHANCE + gemLevel('crit_chance') * gemShopDef('crit_chance').per); }
+function getCritMult() { return CRIT_MULT + gemLevel('crit_power') * gemShopDef('crit_power').per; }
+function getGemShopProdMult() { return 1 + gemLevel('prod') * gemShopDef('prod').per; }
+function getOfflineRate() { return Math.min(1, OFFLINE_RATE + gemLevel('offline') * gemShopDef('offline').per); }
+// Külçe beliriş aralığı çarpanı (<1 → daha sık).
+function getNuggetIntervalMult() { return Math.pow(1 - gemShopDef('nugget').per, gemLevel('nugget')); }
+// Yeniden doğunca verilen başlangıç altını (Miras): seviye başına ×10 basamak.
+function getStartGold() { const lv = gemLevel('start_gold'); return lv > 0 ? 100 * Math.pow(10, lv - 1) : 0; }
 // Başarım çarpanı: açılan her başarım tüm üretime +ACH_BONUS.
 function getAchievementMult() { return 1 + game.achievements.length * ACH_BONUS; }
 // Altın Hücumu aktifken geçici üretim çarpanı.
@@ -79,7 +112,7 @@ function checkAchievements() {
 function genProduction(genId) {
   const def = GENERATORS.find(g => g.id === genId);
   const owned = game.gens[genId] || 0;
-  return owned * def.baseProd * getGenMult(genId) * getGlobalProdMult() * getPrestigeMult() * getAchievementMult() * getFrenzyMult();
+  return owned * def.baseProd * getGenMult(genId) * getGlobalProdMult() * getGemShopProdMult() * getPrestigeMult() * getAchievementMult() * getFrenzyMult();
 }
 
 // Toplam altın/saniye.
@@ -136,8 +169,8 @@ function buyUpgrade(id) {
 
 // Toplam kazanılan altına göre ulaşılabilecek toplam elmas.
 function potentialGems() { return Math.floor(Math.sqrt(Math.max(0, game.totalGold) / GEM_DIVISOR)); }
-// Şimdi yeniden doğunca kazanılacak elmas (henüz alınmamış kısım).
-function pendingGems() { return Math.max(0, potentialGems() - game.gems); }
+// Şimdi yeniden doğunca kazanılacak elmas (henüz alınmamış kısım — ömür boyu).
+function pendingGems() { return Math.max(0, potentialGems() - game.gemsClaimed); }
 // Bir sonraki elmas için gereken toplam altın (ipucu için).
 function goldForNextGem() { return Math.pow(potentialGems() + 1, 2) * GEM_DIVISOR; }
 
@@ -146,8 +179,9 @@ function goldForNextGem() { return Math.pow(potentialGems() + 1, 2) * GEM_DIVISO
 function prestige() {
   const gain = pendingGems();
   if (gain <= 0) return 0;
-  game.gems += gain;
-  game.gold = 0;
+  game.gemsClaimed += gain;        // ömür boyu (bonus/skor)
+  game.gems += gain;               // harcanabilir bakiye (dükkân)
+  game.gold = getStartGold();      // "Miras" yükseltmesi varsa başlangıç altını
   for (const g of GENERATORS) game.gens[g.id] = 0;
   game.upgrades = [];
   return gain;
@@ -156,8 +190,8 @@ function prestige() {
 // Elle kazma: kritik şansı yuvarlanır, kritikse altın CRIT_MULT ile çarpılır.
 // Dönüş: { amount, crit } — UI görsel/ses için crit bayrağını kullanır.
 function clickMine() {
-  const crit = Math.random() < CRIT_CHANCE;
-  const v = getClickValue() * (crit ? CRIT_MULT : 1);
+  const crit = Math.random() < getCritChance();
+  const v = getClickValue() * (crit ? getCritMult() : 1);
   game.gold += v;
   game.totalGold += v;
   game.clicks += 1;
@@ -229,6 +263,14 @@ function applySaveData(d) {
   s.gold = +d.gold || 0;
   s.totalGold = +d.totalGold || 0;
   s.gems = +d.gems || 0;
+  // gemsClaimed yoksa (v11 öncesi kayıt) eski gems = ömür boyu kabul edilir.
+  s.gemsClaimed = (d.gemsClaimed != null) ? (+d.gemsClaimed || 0) : (+d.gems || 0);
+  if (d.gemShop && typeof d.gemShop === 'object') {
+    for (const it of GEM_SHOP) {
+      const lv = Math.floor(+d.gemShop[it.id] || 0);
+      if (lv > 0) s.gemShop[it.id] = Math.min(it.maxLevel, lv);
+    }
+  }
   if (Array.isArray(d.achievements)) s.achievements = d.achievements.filter(id => ACHIEVEMENTS.some(a => a.id === id));
   s.autoClicker = !!d.autoClicker;
   s.autoBuyer = !!d.autoBuyer;
@@ -257,7 +299,7 @@ function loadGame() {
 function applyOffline() {
   const elapsed = Math.min(OFFLINE_MAX_SEC, (Date.now() - game.lastSave) / 1000);
   if (elapsed < 1) return 0;
-  const earned = getGps() * elapsed * OFFLINE_RATE;
+  const earned = getGps() * elapsed * getOfflineRate();
   game.gold += earned;
   game.totalGold += earned;
   return earned;

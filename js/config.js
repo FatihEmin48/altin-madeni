@@ -45,6 +45,21 @@ const UPGRADES = [
 const GEM_DIVISOR = 1e6;
 const GEM_BONUS = 0.02;
 
+// Elmas Dükkânı (prestij yükseltmeleri): elmas HARCANARAK alınan kalıcı, kademeli
+// perkler. Her satın alma seviyeyi 1 artırır ve maliyet costMult ile büyür:
+//   sonraki seviye maliyeti = ceil(baseCost · costMult^mevcutSeviye)
+// `per` her seviyenin etki miktarıdır (etki game.js'teki getter'larda uygulanır).
+// Not: elmaslar harcansa bile pasif +%2 bonus ve skor "ömür boyu" (gemsClaimed)
+// üzerinden hesaplanır — harcamak seni geriletmez.
+const GEM_SHOP = [
+  { id: 'crit_chance', icon: '🎯', name: 'Şanslı El',      desc: 'Kritik şansı +%2',              baseCost: 2, costMult: 2,   maxLevel: 10, per: 0.02 },
+  { id: 'crit_power',  icon: '💥', name: 'Ağır Darbe',     desc: 'Kritik çarpanı +5',             baseCost: 3, costMult: 2,   maxLevel: 8,  per: 5 },
+  { id: 'prod',        icon: '⚙️', name: 'Elmas Dişliler',  desc: 'Tüm üretim +%10',               baseCost: 3, costMult: 1.8, maxLevel: 15, per: 0.10 },
+  { id: 'offline',     icon: '🌙', name: 'Gece Vardiyası',  desc: 'Offline verimi +%5',            baseCost: 2, costMult: 2,   maxLevel: 10, per: 0.05 },
+  { id: 'nugget',      icon: '💫', name: 'Altın Sezgi',     desc: 'Külçe daha sık belirir (-%8)',  baseCost: 3, costMult: 2.2, maxLevel: 6,  per: 0.08 },
+  { id: 'start_gold',  icon: '💰', name: 'Miras',           desc: 'Yeniden doğunca başlangıç altını', baseCost: 4, costMult: 3, maxLevel: 12, per: 10 },
+];
+
 // Başarımlar (js/game.js): check(game) doğruysa kilidi açılır ve kalıcı olarak
 // tüm üretime +ACH_BONUS (%1) ekler. Hedef + küçük bonus.
 const ACH_BONUS = 0.01;
@@ -62,9 +77,9 @@ const ACHIEVEMENTS = [
   { id: 'alltypes',  name: 'Çeşitlilik',      desc: 'Her üreticiden en az 1', check: g => GENERATORS.every(x => (g.gens[x.id] || 0) >= 1) },
   { id: 'up5',       name: 'Yükseltme Sever',  desc: '5 yükseltme al',        check: g => g.upgrades.length >= 5 },
   { id: 'upall',     name: 'Tam Donanım',     desc: 'Tüm yükseltmeleri al',   check: g => g.upgrades.length >= UPGRADES.length },
-  { id: 'prestige1', name: 'Yeniden Doğuş',   desc: 'İlk kez yeniden doğ',    check: g => g.gems >= 1 },
-  { id: 'prestige10', name: 'Elmas Avcısı',   desc: '10 elmasa ulaş',         check: g => g.gems >= 10 },
-  { id: 'prestige50', name: 'Elmas Kralı',    desc: '50 elmasa ulaş',         check: g => g.gems >= 50 },
+  { id: 'prestige1', name: 'Yeniden Doğuş',   desc: 'İlk kez yeniden doğ',    check: g => g.gemsClaimed >= 1 },
+  { id: 'prestige10', name: 'Elmas Avcısı',   desc: '10 elmasa ulaş',         check: g => g.gemsClaimed >= 10 },
+  { id: 'prestige50', name: 'Elmas Kralı',    desc: '50 elmasa ulaş',         check: g => g.gemsClaimed >= 50 },
   { id: 'gold1q',    name: 'Katrilyoner',     desc: 'Toplam 1 katrilyon altın', check: g => g.totalGold >= 1e15 },
   { id: 'magma1',    name: 'Yerin Derinliği', desc: 'İlk Magma Kuyusu',       check: g => g.gens.magma >= 1 },
   { id: 'yorunge1',  name: 'Uzay Çağı',       desc: 'İlk Yörünge Madeni',     check: g => g.gens.yorunge >= 1 },

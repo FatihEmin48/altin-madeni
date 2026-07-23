@@ -291,6 +291,33 @@ section h2 { font-size: 16px; color: var(--gold2); margin: 0 0 8px; }
   background: #2f2740; color: var(--muted); cursor: default; font-size: 13px;
 }
 
+/* --- Elmas Dükkânı --- */
+#gemshop-section {
+  background: linear-gradient(135deg, #14243a, #101a28);
+  border: 1px solid #2f6fb0;
+  border-radius: 12px;
+  padding: 14px;
+}
+.gemshop-hint { font-size: 12px; color: var(--muted); margin: 0 0 10px; }
+#gemshop-bal { margin-bottom: 10px; font-size: 15px; color: #7ec8ff; }
+#gemshop { display: flex; flex-direction: column; gap: 8px; }
+.gem-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  width: 100%; text-align: left;
+  background: rgba(255,255,255,0.03); color: var(--text);
+  border: 1px solid rgba(126,200,255,0.15);
+  border-radius: 10px; padding: 10px 12px; cursor: pointer;
+}
+.gem-row:hover:not(:disabled) { background: rgba(126,200,255,0.08); }
+.gem-row.locked { opacity: 0.55; }
+.gem-row.done { border-color: var(--ok); }
+.gem-icon { font-size: 24px; }
+.gem-info { flex: 1; min-width: 0; }
+.gem-name { font-weight: bold; }
+.gem-lvl { font-size: 12px; color: #7ec8ff; font-weight: normal; }
+.gem-desc { font-size: 12px; color: var(--muted); }
+.gem-cost { color: #7ec8ff; font-weight: bold; white-space: nowrap; }
+
 /* --- Footer --- */
 footer {
   margin-top: 22px; display: flex; align-items: center; justify-content: space-between;

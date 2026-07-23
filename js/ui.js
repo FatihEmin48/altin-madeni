@@ -5,6 +5,7 @@ const UI = (function () {
   let buyAmount = 1; // 1 | 10 | 'max'
   const genRows = {};
   const upRows = {};
+  const gemRows = {};
 
   function init() {
     els.gold = document.getElementById('gold');
@@ -19,6 +20,8 @@ const UI = (function () {
     els.offlineText = document.getElementById('offline-text');
     els.prestigeInfo = document.getElementById('prestige-info');
     els.prestigeBtn = document.getElementById('prestige-btn');
+    els.gemshop = document.getElementById('gemshop');
+    els.gemshopBal = document.getElementById('gemshop-bal');
     els.achievements = document.getElementById('achievements');
     els.achCount = document.getElementById('ach-count');
     els.toast = document.getElementById('toast');
@@ -74,6 +77,7 @@ const UI = (function () {
         hardReset();
         buildGenerators();
         buildUpgrades();
+        syncGemShop();
       }
     });
     document.getElementById('offline-close').addEventListener('click', () => {
@@ -88,6 +92,7 @@ const UI = (function () {
         syncGenerators();
         syncUpgrades();
         syncPrestige();
+        syncGemShop();
       }
     });
 
@@ -95,6 +100,7 @@ const UI = (function () {
     buildUpgrades();
     buildAchievements();
     buildAutomation();
+    buildGemShop();
     initCloud();
   }
 
@@ -256,15 +262,49 @@ const UI = (function () {
     }
   }
 
+  function buildGemShop() {
+    els.gemshop.innerHTML = '';
+    for (const it of GEM_SHOP) {
+      const row = document.createElement('button');
+      row.className = 'gem-row';
+      row.addEventListener('click', () => {
+        if (buyGemUpgrade(it.id)) { Sound.play('buy'); syncGemShop(); syncStats(); syncPrestige(); }
+      });
+      els.gemshop.appendChild(row);
+      gemRows[it.id] = row;
+    }
+    syncGemShop();
+  }
+
+  function syncGemShop() {
+    els.gemshopBal.innerHTML = `Harcanabilir: 💎 <b>${formatNum(game.gems)}</b>`;
+    for (const it of GEM_SHOP) {
+      const row = gemRows[it.id];
+      const lvl = gemLevel(it.id);
+      const maxed = lvl >= it.maxLevel;
+      const head = `<div class="gem-icon">${it.icon}</div><div class="gem-info"><div class="gem-name">${it.name} <span class="gem-lvl">Sv ${lvl}/${it.maxLevel}</span></div><div class="gem-desc">${it.desc}</div></div>`;
+      if (maxed) {
+        row.innerHTML = head + `<div class="gem-cost">✓ Maks</div>`;
+        row.classList.add('done'); row.classList.remove('locked'); row.disabled = true;
+      } else {
+        const cost = gemUpgradeCost(it.id);
+        row.innerHTML = head + `<div class="gem-cost">💎 ${formatNum(cost)}</div>`;
+        const afford = game.gems >= cost;
+        row.classList.toggle('locked', !afford); row.classList.remove('done'); row.disabled = !afford;
+      }
+    }
+  }
+
   function syncStats() {
     const totalOwned = GENERATORS.reduce((s, g) => s + (game.gens[g.id] || 0), 0);
     const rows = [
       ['Toplam kazanılan altın', formatNum(game.totalGold)],
       ['Altın / sn', formatNum(getGps())],
       ['Toplam tıklama', formatNum(Math.floor(game.clicks))],
-      ['💎 Elmas', `${formatNum(game.gems)} (+${Math.round((getPrestigeMult() - 1) * 100)}%)`],
+      ['💎 Elmas (harcanabilir)', formatNum(game.gems)],
+      ['💎 Elmas (ömür boyu)', `${formatNum(game.gemsClaimed)} (+${Math.round((getPrestigeMult() - 1) * 100)}%)`],
       ['Başarım bonusu', `+${Math.round((getAchievementMult() - 1) * 100)}%`],
-      ['Kritik tıklama', `%${Math.round(CRIT_CHANCE * 100)} şans · ×${CRIT_MULT}`],
+      ['Kritik tıklama', `%${Math.round(getCritChance() * 100)} şans · ×${formatNum(getCritMult())}`],
       ['Toplam üretici', formatNum(totalOwned)],
       ['Açılan başarım', `${game.achievements.length}/${ACHIEVEMENTS.length}`],
       ['Oynama süresi', formatDuration(game.playtime)],
@@ -462,7 +502,7 @@ const UI = (function () {
 
   function syncPrestige() {
     const bonus = Math.round((getPrestigeMult() - 1) * 100);
-    els.prestigeInfo.innerHTML = `💎 <b>${formatNum(game.gems)}</b> elmas · tüm üretim <b>+${bonus}%</b>`;
+    els.prestigeInfo.innerHTML = `💎 <b>${formatNum(game.gemsClaimed)}</b> elmas (ömür boyu) · tüm üretim <b>+${bonus}%</b> · harcanabilir: 💎 ${formatNum(game.gems)}`;
     const pending = pendingGems();
     if (pending > 0) {
       els.prestigeBtn.textContent = `Yeniden Doğ  (+${formatNum(pending)} 💎)`;
@@ -483,6 +523,7 @@ const UI = (function () {
     syncGenerators();
     syncUpgrades();
     syncPrestige();
+    syncGemShop();
     syncFrenzy();
     syncAutomation();
     syncStats();
