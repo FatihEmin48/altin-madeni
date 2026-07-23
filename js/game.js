@@ -18,6 +18,8 @@ function createState() {
     autoBuyer: false,   // oto-alıcı alındı mı
     autoBuyerOn: true,  // oto-alıcı açık mı
     playtime: 0,        // toplam oynama süresi (sn)
+    lastDailyClaim: 0,  // son günlük ödül zamanı (ms)
+    dailyStreak: 0,     // ardışık günlük ödül serisi
     clicks: 0,
     gens,
     upgrades: [],   // satın alınan yükseltme id'leri
@@ -327,6 +329,8 @@ function applySaveData(d) {
   s.autoBuyer = !!d.autoBuyer;
   s.autoBuyerOn = d.autoBuyerOn !== false;
   s.playtime = +d.playtime || 0;
+  s.lastDailyClaim = +d.lastDailyClaim || 0;
+  s.dailyStreak = +d.dailyStreak || 0;
   s.clicks = +d.clicks || 0;
   s.lastSave = +d.lastSave || Date.now();
   if (d.gens && typeof d.gens === 'object') for (const g of GENERATORS) s.gens[g.id] = +d.gens[g.id] || 0;
@@ -391,6 +395,42 @@ function compareProgress(a, b) {
   const al = +(a && a.lastSave) || 0, bl = +(b && b.lastSave) || 0;
   if (al !== bl) return al > bl ? 1 : -1;
   return 0;
+}
+
+// --- Günlük ödül / giriş serisi ---
+const DAY_MS = 86400000;
+function dayNumber(ts) { return Math.floor((+ts || 0) / DAY_MS); }
+// Bugün (UTC) henüz toplanmadıysa true.
+function canClaimDaily(now) {
+  now = now || Date.now();
+  return dayNumber(now) > dayNumber(game.lastDailyClaim);
+}
+// Bir sonraki günlük ödüle kalan süre (ms).
+function nextDailyIn(now) {
+  now = now || Date.now();
+  return Math.max(0, (dayNumber(now) + 1) * DAY_MS - now);
+}
+// Verilen seri için ödül altınını hesaplar (gps'ye ölçekli).
+function dailyReward(streak, now) {
+  const streakMult = Math.min(DAILY.maxStreakMult, 1 + Math.max(0, streak - 1) * DAILY.streakStep);
+  const weekBonus = (streak > 0 && streak % DAILY.weekDay === 0) ? DAILY.weekMult : 1;
+  const base = Math.max(DAILY.baseGold, getGps() * DAILY.gpsSeconds);
+  return base * streakMult * weekBonus;
+}
+// Günlük ödülü topla. Dönüş: { reward, streak, week } ya da toplanamıyorsa null.
+function claimDaily(now) {
+  now = now || Date.now();
+  if (!canClaimDaily(now)) return null;
+  const today = dayNumber(now);
+  const last = dayNumber(game.lastDailyClaim);
+  // Dün toplandıysa seri sürer, yoksa (kaçırıldıysa/ilk kez) 1'e sıfırlanır.
+  const streak = (game.lastDailyClaim && last === today - 1) ? (game.dailyStreak + 1) : 1;
+  const reward = dailyReward(streak, now);
+  game.gold += reward;
+  game.totalGold += reward;
+  game.lastDailyClaim = now;
+  game.dailyStreak = streak;
+  return { reward, streak, week: (streak % DAILY.weekDay === 0) };
 }
 
 function hardReset() {

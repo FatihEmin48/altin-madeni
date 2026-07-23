@@ -132,3 +132,15 @@ const OFFLINE_MAX_SEC = 8 * 3600; // en fazla 8 saatlik offline kazanç
 const OFFLINE_RATE = 0.5;     // offline kazanç, aktif üretimin %50'si
 const AUTOSAVE_SEC = 15;      // yerel (localStorage) otomatik kayıt aralığı
 const CLOUD_AUTOSAVE_SEC = 45; // girişliyken buluta otomatik kayıt aralığı
+
+// Günlük ödül / giriş serisi: her (UTC) gün bir kez toplanır. Ardışık günlerde
+// toplarsan seri büyür ve ödül artar; bir gün kaçırırsan seri sıfırlanır.
+// Ödül gps'ye göre ölçeklenir → geç oyunda da anlamlı kalır.
+const DAILY = {
+  baseGold: 1000,   // erken oyun tabanı (gps düşükken)
+  gpsSeconds: 300,  // ödül ≈ üretimin 5 dakikası
+  streakStep: 0.2,  // her ardışık gün +%20
+  maxStreakMult: 4, // seri çarpanı tavanı (×4 → 16. gün)
+  weekDay: 7,       // her 7. gün ekstra
+  weekMult: 3,      // o gün ödül ×3
+};

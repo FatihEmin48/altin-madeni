@@ -27,6 +27,8 @@ const UI = (function () {
     els.prestigeBtn = document.getElementById('prestige-btn');
     els.gemshop = document.getElementById('gemshop');
     els.gemshopBal = document.getElementById('gemshop-bal');
+    els.dailyInfo = document.getElementById('daily-info');
+    els.dailyBtn = document.getElementById('daily-btn');
     els.achievements = document.getElementById('achievements');
     els.achCount = document.getElementById('ach-count');
     els.toast = document.getElementById('toast');
@@ -77,6 +79,15 @@ const UI = (function () {
     els.backupStatus = document.getElementById('backup-status');
     document.getElementById('export-btn').addEventListener('click', doExport);
     document.getElementById('import-btn').addEventListener('click', doImport);
+
+    els.dailyBtn.addEventListener('click', () => {
+      const r = claimDaily();
+      if (r) {
+        Sound.play('achievement');
+        showToast(`🎁 Günlük ödül! <b>+${formatNum(r.reward)}</b> altın · ${r.streak} günlük seri${r.week ? ' · 🔥 HAFTA BONUSU!' : ''}`);
+        syncDaily();
+      }
+    });
 
     document.getElementById('reset-btn').addEventListener('click', () => {
       if (confirm('Tüm ilerlemen silinsin mi? Bu geri alınamaz.')) {
@@ -414,6 +425,17 @@ const UI = (function () {
     }
   }
 
+  function syncDaily() {
+    const can = canClaimDaily();
+    const streak = game.dailyStreak || 0;
+    const info = `🔥 Seri: <b>${streak}</b> gün` +
+      (can ? ' · <b>bugünkü ödül hazır!</b>' : ` · sonraki ödül ${formatDuration(Math.ceil(nextDailyIn() / 1000))} sonra`);
+    setHTML(els.dailyInfo, info);
+    els.dailyBtn.disabled = !can;
+    els.dailyBtn.textContent = can ? '🎁 Topla' : 'Bugün toplandı ✓';
+    els.dailyBtn.classList.toggle('ready', can);
+  }
+
   function syncEvent() {
     const d = activeEvent();
     if (d) {
@@ -592,6 +614,7 @@ const UI = (function () {
     els.clickVal.textContent = '+' + formatNum(getClickValue());
     syncGenerators();
     syncUpgrades();
+    syncDaily();
     syncPrestige();
     syncGemShop();
     syncFrenzy();

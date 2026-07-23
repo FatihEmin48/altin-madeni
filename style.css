@@ -303,6 +303,29 @@ section h2 { font-size: 16px; color: var(--gold2); margin: 0 0 8px; }
   background: #2f2740; color: var(--muted); cursor: default; font-size: 13px;
 }
 
+/* --- Günlük ödül --- */
+#daily-section {
+  background: linear-gradient(135deg, #3a2a12, #241a0c);
+  border: 1px solid #7d5a1e;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+}
+#daily-info { margin-bottom: 10px; color: var(--text); }
+#daily-btn {
+  background: #3a3020; color: var(--muted); border: none;
+  padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 15px;
+}
+#daily-btn.ready {
+  background: linear-gradient(135deg, #f1c40f, #e67e22); color: #1c160c;
+  animation: dailyPulse 1.4s ease-in-out infinite;
+}
+#daily-btn:disabled { cursor: default; }
+@keyframes dailyPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(241,196,15,0.5); }
+  50%      { transform: scale(1.04); box-shadow: 0 0 14px 2px rgba(241,196,15,0.6); }
+}
+
 /* --- Elmas Dükkânı --- */
 #gemshop-section {
   background: linear-gradient(135deg, #14243a, #101a28);

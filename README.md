@@ -18,6 +18,7 @@ Tarayıcıda oynanan bir **idle / artırımlı (incremental)** oyun. Saf HTML5 +
 - **Altın külçesi:** Ara sıra ekranda parlayan bir külçe belirir; tıklarsan ya toplu **bonus altın** ya da geçici **Altın Hücumu** (üretim ×7, 15 sn) kazanırsın. Aktif oynamayı ödüllendirir.
 - **Mini etkinlikler:** Oynarken ara sıra kendiliğinden süreli etkinlikler başlar — Maden Şenliği (üretim ×2), Pazar Yükselişi (×2.5), Altın Damarı (×3), Tıklama Ateşi (tıklama ×5). Üstte bir afişle gösterilir ve diğer çarpanlarla birlikte katlanır.
 - **Otomasyon:** **Oto-Tıklayıcı** (saniyede otomatik kazar) ve **Oto-Alıcı** (açık/kapalı; en ucuz üreticiyi otomatik satın alır) satın alınabilir.
+- **Günlük ödül:** Her (UTC) gün bir kez toplanan, üretimine göre ölçeklenen altın ödülü. Ardışık günlerde toplarsan **seri** büyür ve ödül artar (her 7. günde hafta bonusu ×3); bir gün kaçırırsan seri sıfırlanır.
 - **İstatistikler:** Toplam altın, altın/sn, tıklama, elmas/bonuslar, üretici sayısı, oynama süresi.
 - **Kaydı yedekle:** Kaydını tek bir metin kodu olarak **dışa aktar** (panoya kopyalanır — yedekle ya da başka cihaza taşı) ya da bir kodu **içe aktar**. Bulut girişi gerektirmez; bozuk/geçersiz kod güvenle reddedilir.
 - **Online (Supabase):** E-posta ile giriş/kayıt → **buluta kaydet / buluttan yükle** (cihazlar arası yedek) ve **skor tablosu** (elmasa göre ilk 20). Kurulum: `supabase/KURULUM.md` + `supabase/schema.sql`. İstemcideki `publishable` anahtar güvenlidir; erişim RLS ile korunur. **Üzerine yazma koruması:** buluttaki kayıt seninkinden ileriyken kaydetmeye (ya da geriyken yüklemeye) çalışırsan ilerlemeni yanlışlıkla silmemen için uyarı çıkar.
@@ -53,4 +54,4 @@ Saf mantık (`js/game.js`) DOM'dan bağımsızdır, bu yüzden Node ile test edi
 
 ## Henüz kapsam dışı (sonraki sürümler)
 
-Arka plan müziği, rastgele mini etkinlikler, günlük ödül.
+Arka plan müziği, ikinci prestij katmanı, tema / parçacık efektleri.
