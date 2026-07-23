@@ -182,6 +182,18 @@ section h2 { font-size: 16px; color: var(--gold2); margin: 0 0 8px; }
 #cloud-status.err { color: #e74c3c; }
 #cloud-loggedin.hidden, #cloud-loggedout.hidden { display: none; }
 
+/* --- Kaydı yedekle --- */
+.backup-hint { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+#save-code {
+  width: 100%; box-sizing: border-box; margin-bottom: 8px; padding: 9px 10px;
+  background: var(--panel); color: var(--text);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
+  font-family: monospace; font-size: 12px; resize: vertical; word-break: break-all;
+}
+#backup-status { font-size: 13px; margin-top: 8px; min-height: 16px; color: var(--muted); }
+#backup-status.ok { color: var(--ok); }
+#backup-status.err { color: #e74c3c; }
+
 .lb-title { font-size: 15px; color: var(--gold2); margin: 14px 0 8px; display: flex; align-items: center; gap: 8px; }
 .mini { background: var(--panel2); color: var(--text); border: 1px solid rgba(255,255,255,0.15); padding: 3px 10px; border-radius: 5px; font-size: 12px; cursor: pointer; }
 #leaderboard { display: flex; flex-direction: column; gap: 4px; }

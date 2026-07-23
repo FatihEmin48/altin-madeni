@@ -263,6 +263,30 @@ function applyOffline() {
   return earned;
 }
 
+// --- Kaydı dışa/içe aktar (metin yedeği) ---
+// Kayıt objesi JSON → UTF-8 güvenli base64 metne kodlanır (panoya/dosyaya).
+function encodeSave(obj) {
+  const json = JSON.stringify(obj);
+  return btoa(unescape(encodeURIComponent(json)));
+}
+function decodeSave(text) {
+  const json = decodeURIComponent(escape(atob(String(text).trim())));
+  return JSON.parse(json);
+}
+// Mevcut durumun taşınabilir metin kodu.
+function exportSave() {
+  game.lastSave = Date.now();
+  return encodeSave(game);
+}
+// Metin kodunu çözer ve (doğrulayarak) uygular. Bozuk/geçersiz → false.
+function importSave(text) {
+  try {
+    return applySaveData(decodeSave(text));
+  } catch (e) {
+    return false;
+  }
+}
+
 function hardReset() {
   game = createState();
   saveGame();

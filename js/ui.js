@@ -64,6 +64,11 @@ const UI = (function () {
     els.soundBtn.addEventListener('click', () => { Sound.toggle(); syncSoundBtn(); });
     syncSoundBtn();
 
+    els.saveCode = document.getElementById('save-code');
+    els.backupStatus = document.getElementById('backup-status');
+    document.getElementById('export-btn').addEventListener('click', doExport);
+    document.getElementById('import-btn').addEventListener('click', doImport);
+
     document.getElementById('reset-btn').addEventListener('click', () => {
       if (confirm('Tüm ilerlemen silinsin mi? Bu geri alınamaz.')) {
         hardReset();
@@ -295,6 +300,43 @@ const UI = (function () {
       els.frenzyBanner.classList.remove('hidden');
     } else {
       els.frenzyBanner.classList.add('hidden');
+    }
+  }
+
+  function backupMsg(text, ok) {
+    els.backupStatus.textContent = text || '';
+    els.backupStatus.className = ok ? 'ok' : (text ? 'err' : '');
+  }
+
+  function doExport() {
+    saveGame();
+    const code = exportSave();
+    els.saveCode.value = code;
+    els.saveCode.focus();
+    els.saveCode.select();
+    let copied = false;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(code); copied = true; }
+      else if (document.execCommand) { copied = document.execCommand('copy'); }
+    } catch (e) { copied = false; }
+    Sound.play('buy');
+    backupMsg(copied ? '📤 Kayıt kodu panoya kopyalandı — güvenli bir yere sakla.' : '📤 Kod aşağıda — seçip elle kopyala.', true);
+  }
+
+  function doImport() {
+    const text = (els.saveCode.value || '').trim();
+    if (!text) { backupMsg('Önce kayıt kodunu yapıştır.', false); return; }
+    if (!confirm('İçe aktarılan kayıt mevcut ilerlemenin ÜZERİNE yazılacak. Emin misin?')) return;
+    if (importSave(text)) {
+      saveGame();
+      sync();
+      syncAchievements();
+      Sound.play('achievement');
+      backupMsg('📥 Kayıt başarıyla içe aktarıldı.', true);
+      showToast('📥 Kayıt içe aktarıldı');
+    } else {
+      Sound.play('click');
+      backupMsg('Geçersiz kayıt kodu — içe aktarılamadı.', false);
     }
   }
 
