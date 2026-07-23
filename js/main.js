@@ -65,3 +65,9 @@ window.addEventListener('DOMContentLoaded', () => {
   lastTime = performance.now();
   requestAnimationFrame(frame);
 });
+
+// PWA: service worker'ı kaydet (yüklenebilir + çevrimdışı). HTTPS/localhost
+// dışında ya da desteklenmiyorsa sessizce geçilir; oyun yine çalışır.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+}

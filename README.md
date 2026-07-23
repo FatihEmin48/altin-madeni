@@ -4,6 +4,8 @@ Tarayıcıda oynanan bir **idle / artırımlı (incremental)** oyun. Saf HTML5 +
 
 **Canlı oyna:** https://fatihemin48.github.io/altin-madeni/
 
+**Uygulama olarak kur (PWA):** Telefonda/masaüstünde tarayıcı menüsünden "Ana ekrana ekle" / "Uygulamayı yükle" ile ikonlu, tam ekran, **çevrimdışı** açılan bir uygulama olarak kurulur.
+
 ## Nasıl oynanır
 
 - **KAZ!** butonuna tıklayarak elle altın kazan. Her tıklamada **%5 kritik** şansı var — kritik vuruşta altın **×10** (altın patlama + ses efektiyle).
