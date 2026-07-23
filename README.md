@@ -6,7 +6,8 @@ Tarayıcıda oynanan bir **idle / artırımlı (incremental)** oyun. Saf HTML5 +
 
 ## Nasıl oynanır
 
-- **KAZ!** butonuna tıklayarak elle altın kazan.
+- **KAZ!** butonuna tıklayarak elle altın kazan. Her tıklamada **%5 kritik** şansı var — kritik vuruşta altın **×10** (altın patlama + ses efektiyle).
+- **Ses:** Tıklama, kritik, satın alma, külçe, başarım ve yeniden doğuş için dosyasız (Web Audio) efektler. Sağ üstteki 🔊 düğmesiyle aç/kapatılır (tercih hatırlanır).
 - **Üreticiler** (Kazmacı, Matkap, Vagon...) satın al; her biri saniyede otomatik altın üretir. Maliyet her alımda %15 artar.
 - **Alım miktarı** (×1 / ×10 / Max) ile toplu alım yap.
 - **Yükseltmeler** tıklama gücünü ya da üretimi çarpar (tek seferlik).
@@ -34,7 +35,8 @@ Saf mantık (`js/game.js`) DOM'dan bağımsızdır, bu yüzden Node ile test edi
 |---|---|
 | `js/format.js` | Büyük sayı biçimlendirme (K/M/B/T…) + süre |
 | `js/config.js` | Sabitler: `GENERATORS`, `UPGRADES`, maliyet eğrisi, offline ayarları |
-| `js/game.js` | Durum + saf mantık: üretim, satın alma, tıklama, kaydet/yükle, offline |
+| `js/game.js` | Durum + saf mantık: üretim, satın alma, tıklama (kritik), kaydet/yükle, offline |
+| `js/sound.js` | Web Audio ile sentezlenen ses efektleri + mute (dosyasız) |
 | `js/ui.js` | DOM arayüzü (satırları kurar, sayaçları senkronlar) |
 | `js/main.js` | rAF döngüsü (dt ile birikim), UI senkron, otomatik kayıt |
 
@@ -44,4 +46,4 @@ Saf mantık (`js/game.js`) DOM'dan bağımsızdır, bu yüzden Node ile test edi
 
 ## Henüz kapsam dışı (sonraki sürümler)
 
-Ses/müzik, kaydı dışa/içe aktar, kritik tıklama, daha fazla üretici/yükseltme katmanı.
+Arka plan müziği, kaydı dışa/içe aktar, daha fazla üretici/yükseltme katmanı.

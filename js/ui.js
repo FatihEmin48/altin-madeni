@@ -36,8 +36,9 @@ const UI = (function () {
     // Kazma: masaüstünde click, dokunmatikte touchstart (preventDefault ile
     // hem çift-dokun zoom'unu hem emüle edilen click'i engeller → çift saymaz).
     function doMine(pointer) {
-      const v = clickMine();
-      spawnClickFx(v, pointer);
+      const r = clickMine();
+      spawnClickFx(r.amount, pointer, r.crit);
+      Sound.play(r.crit ? 'crit' : 'click');
     }
     els.mineBtn.addEventListener('click', (e) => doMine(e));
     els.mineBtn.addEventListener('touchstart', (e) => {
@@ -54,6 +55,15 @@ const UI = (function () {
       });
     });
 
+    els.soundBtn = document.getElementById('sound-btn');
+    const syncSoundBtn = () => {
+      const on = Sound.isEnabled();
+      els.soundBtn.textContent = on ? '🔊' : '🔇';
+      els.soundBtn.classList.toggle('muted', !on);
+    };
+    els.soundBtn.addEventListener('click', () => { Sound.toggle(); syncSoundBtn(); });
+    syncSoundBtn();
+
     document.getElementById('reset-btn').addEventListener('click', () => {
       if (confirm('Tüm ilerlemen silinsin mi? Bu geri alınamaz.')) {
         hardReset();
@@ -69,6 +79,7 @@ const UI = (function () {
       if (p <= 0) return;
       if (confirm(`Yeniden doğ: +${formatNum(p)} 💎 elmas kazanacaksın. Altının, üreticilerin ve yükseltmelerin sıfırlanacak (elmasların kalıcı). Emin misin?`)) {
         prestige();
+        Sound.play('prestige');
         syncGenerators();
         syncUpgrades();
         syncPrestige();
@@ -220,6 +231,7 @@ const UI = (function () {
       ['Toplam tıklama', formatNum(Math.floor(game.clicks))],
       ['💎 Elmas', `${formatNum(game.gems)} (+${Math.round((getPrestigeMult() - 1) * 100)}%)`],
       ['Başarım bonusu', `+${Math.round((getAchievementMult() - 1) * 100)}%`],
+      ['Kritik tıklama', `%${Math.round(CRIT_CHANCE * 100)} şans · ×${CRIT_MULT}`],
       ['Toplam üretici', formatNum(totalOwned)],
       ['Açılan başarım', `${game.achievements.length}/${ACHIEVEMENTS.length}`],
       ['Oynama süresi', formatDuration(game.playtime)],
@@ -266,6 +278,7 @@ const UI = (function () {
       done = true;
       e.preventDefault();
       const r = grantNugget();
+      Sound.play('nugget');
       if (r.type === 'gold') showToast(`💰 Altın külçesi! <b>+${formatNum(r.amount)}</b> altın`);
       else showToast(`⚡ Altın Hücumu! Üretim <b>×${r.mult}</b> · ${r.dur}sn`);
       el.remove();
@@ -294,15 +307,15 @@ const UI = (function () {
     toastTimer = setTimeout(() => els.toast.classList.remove('show'), 2600);
   }
 
-  function spawnClickFx(amount, e) {
+  function spawnClickFx(amount, e, crit) {
     const fx = document.createElement('div');
-    fx.className = 'click-float';
-    fx.textContent = '+' + formatNum(amount);
+    fx.className = 'click-float' + (crit ? ' crit' : '');
+    fx.textContent = (crit ? 'KRİTİK! +' : '+') + formatNum(amount);
     const rect = els.mineBtn.getBoundingClientRect();
     const px = (e && e.clientX ? e.clientX : rect.left + rect.width / 2) - rect.left;
     fx.style.left = px + 'px';
     els.clickFx.appendChild(fx);
-    setTimeout(() => fx.remove(), 900);
+    setTimeout(() => fx.remove(), crit ? 1100 : 900);
   }
 
   function buildGenerators() {
@@ -316,7 +329,7 @@ const UI = (function () {
         `<div class="gen-prod"></div></div>` +
         `<div class="gen-buy"></div>`;
       row.addEventListener('click', () => {
-        if (buyGenerator(g.id, buyAmount) > 0) { syncGenerators(); syncUpgrades(); }
+        if (buyGenerator(g.id, buyAmount) > 0) { Sound.play('buy'); syncGenerators(); syncUpgrades(); }
       });
       els.generators.appendChild(row);
       genRows[g.id] = {
@@ -336,7 +349,7 @@ const UI = (function () {
       row.className = 'up-row';
       row.innerHTML = `<div class="up-name">${u.name}</div><div class="up-desc">${u.desc}</div><div class="up-cost"></div>`;
       row.addEventListener('click', () => {
-        if (buyUpgrade(u.id)) { syncUpgrades(); }
+        if (buyUpgrade(u.id)) { Sound.play('buy'); syncUpgrades(); }
       });
       els.upgrades.appendChild(row);
       upRows[u.id] = { row, cost: row.querySelector('.up-cost') };
@@ -407,6 +420,7 @@ const UI = (function () {
     const newly = checkAchievements();
     if (newly.length) {
       syncAchievements();
+      Sound.play('achievement');
       showToast(`🏅 Başarım: <b>${newly.map(a => a.name).join(', ')}</b>`);
     }
   }

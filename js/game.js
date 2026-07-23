@@ -153,12 +153,15 @@ function prestige() {
   return gain;
 }
 
+// Elle kazma: kritik şansı yuvarlanır, kritikse altın CRIT_MULT ile çarpılır.
+// Dönüş: { amount, crit } — UI görsel/ses için crit bayrağını kullanır.
 function clickMine() {
-  const v = getClickValue();
+  const crit = Math.random() < CRIT_CHANCE;
+  const v = getClickValue() * (crit ? CRIT_MULT : 1);
   game.gold += v;
   game.totalGold += v;
   game.clicks += 1;
-  return v;
+  return { amount: v, crit };
 }
 
 // En ucuz karşılanabilir üreticiden 1 alır (oto-alıcı için).

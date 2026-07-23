@@ -59,6 +59,11 @@ const ACHIEVEMENTS = [
 ];
 
 const BASE_CLICK = 1;         // yükseltmesiz tıklama başına altın
+// Kritik tıklama: elle KAZ!'a her tıklamada CRIT_CHANCE olasılıkla vuruş
+// "kritik" olur ve altın CRIT_MULT ile çarpılır. Aktif oynamayı ödüllendirir;
+// otomatik üretim/oto-tıklayıcı kritik yapmaz (sadece manuel).
+const CRIT_CHANCE = 0.05;     // %5 kritik şansı
+const CRIT_MULT = 10;         // kritik vuruşta altın ×10
 // Altın külçesi: ara sıra ekranda beliren, tıklanınca ödül veren bonus.
 // İki ödül türü: toplu bonus altın ya da geçici "Altın Hücumu" üretim çarpanı.
 const NUGGET = {
