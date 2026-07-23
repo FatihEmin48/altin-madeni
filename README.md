@@ -8,7 +8,7 @@ Tarayıcıda oynanan bir **idle / artırımlı (incremental)** oyun. Saf HTML5 +
 
 - **KAZ!** butonuna tıklayarak elle altın kazan. Her tıklamada **%5 kritik** şansı var — kritik vuruşta altın **×10** (altın patlama + ses efektiyle).
 - **Ses:** Tıklama, kritik, satın alma, külçe, başarım ve yeniden doğuş için dosyasız (Web Audio) efektler. Sağ üstteki 🔊 düğmesiyle aç/kapatılır (tercih hatırlanır).
-- **Üreticiler** (Kazmacı, Matkap, Vagon...) satın al; her biri saniyede otomatik altın üretir. Maliyet her alımda %15 artar.
+- **Üreticiler** (Kazmacı, Matkap, Vagon... ta ki 🌋 Magma Kuyusu ve 🪐 Yörünge Madeni'ne kadar 10 kademe) satın al; her biri saniyede otomatik altın üretir. Maliyet her alımda %15 artar.
 - **Alım miktarı** (×1 / ×10 / Max) ile toplu alım yap.
 - **Yükseltmeler** tıklama gücünü ya da üretimi çarpar (tek seferlik).
 - **Başarımlar** (tıklama/altın/üretici kilometre taşları) açıldıkça bildirim çıkar ve her biri tüm üretime kalıcı **+%1** ekler.
@@ -47,4 +47,4 @@ Saf mantık (`js/game.js`) DOM'dan bağımsızdır, bu yüzden Node ile test edi
 
 ## Henüz kapsam dışı (sonraki sürümler)
 
-Arka plan müziği, daha fazla üretici/yükseltme katmanı.
+Arka plan müziği, kritik/şans yükseltmeleri, mini etkinlikler.

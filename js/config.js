@@ -14,6 +14,8 @@ const GENERATORS = [
   { id: 'makine',   name: 'Kazı Makinesi',     icon: '🏗️', baseCost: 1.4e6,  baseProd: 1400 },
   { id: 'reaktor',  name: 'Elmas Reaktörü',    icon: '💎', baseCost: 20e6,   baseProd: 7800 },
   { id: 'ussu',     name: 'Maden Üssü',        icon: '🛰️', baseCost: 330e6,  baseProd: 44000 },
+  { id: 'magma',    name: 'Magma Kuyusu',      icon: '🌋', baseCost: 5.5e9,  baseProd: 260000 },
+  { id: 'yorunge',  name: 'Yörünge Madeni',    icon: '🪐', baseCost: 90e9,   baseProd: 1.5e6 },
 ];
 
 // Tek seferlik yükseltmeler. effect:
@@ -29,6 +31,12 @@ const UPGRADES = [
   { id: 'otomasyon', name: 'Otomasyon',        desc: 'Tüm üretim ×2',          cost: 250000, effect: { prodMult: 2 } },
   { id: 'ai',       name: 'Yapay Zekâ Yönetim', desc: 'Tüm üretim ×3',         cost: 5e6,    effect: { prodMult: 3 } },
   { id: 'kazma4',   name: 'Lazer Kazma',       desc: 'Tıklama gücü ×3',        cost: 1e6,    effect: { clickMult: 3 } },
+  { id: 'vagon_x3', name: 'Raylı Sistem',      desc: 'Maden Vagonu üretimi ×3', cost: 3e5,   effect: { genMult: { vagon: 3 } } },
+  { id: 'kuantum',  name: 'Kuantum Sondaj',    desc: 'Tüm üretim ×3',          cost: 5e7,    effect: { prodMult: 3 } },
+  { id: 'kazma5',   name: 'Antimadde Kazma',   desc: 'Tıklama gücü ×3',        cost: 1e8,    effect: { clickMult: 3 } },
+  { id: 'reaktor_x3', name: 'Füzyon Çekirdeği', desc: 'Elmas Reaktörü üretimi ×3', cost: 1.5e8, effect: { genMult: { reaktor: 3 } } },
+  { id: 'galaktik', name: 'Galaktik Ağ',       desc: 'Tüm üretim ×5',          cost: 2e9,    effect: { prodMult: 5 } },
+  { id: 'magma_x3', name: 'Termal Zırh',       desc: 'Magma Kuyusu üretimi ×3', cost: 5e10,  effect: { genMult: { magma: 3 } } },
 ];
 
 // Prestij (Yeniden Doğuş): toplam kazanılan altına göre kalıcı 💎 elmas.
@@ -56,6 +64,12 @@ const ACHIEVEMENTS = [
   { id: 'upall',     name: 'Tam Donanım',     desc: 'Tüm yükseltmeleri al',   check: g => g.upgrades.length >= UPGRADES.length },
   { id: 'prestige1', name: 'Yeniden Doğuş',   desc: 'İlk kez yeniden doğ',    check: g => g.gems >= 1 },
   { id: 'prestige10', name: 'Elmas Avcısı',   desc: '10 elmasa ulaş',         check: g => g.gems >= 10 },
+  { id: 'prestige50', name: 'Elmas Kralı',    desc: '50 elmasa ulaş',         check: g => g.gems >= 50 },
+  { id: 'gold1q',    name: 'Katrilyoner',     desc: 'Toplam 1 katrilyon altın', check: g => g.totalGold >= 1e15 },
+  { id: 'magma1',    name: 'Yerin Derinliği', desc: 'İlk Magma Kuyusu',       check: g => g.gens.magma >= 1 },
+  { id: 'yorunge1',  name: 'Uzay Çağı',       desc: 'İlk Yörünge Madeni',     check: g => g.gens.yorunge >= 1 },
+  { id: 'gen100',    name: 'Sanayi Devrimi',  desc: 'Toplam 100 üretici',     check: g => GENERATORS.reduce((s, x) => s + (g.gens[x.id] || 0), 0) >= 100 },
+  { id: 'gen500',    name: 'Maden İmparatoru', desc: 'Toplam 500 üretici',    check: g => GENERATORS.reduce((s, x) => s + (g.gens[x.id] || 0), 0) >= 500 },
 ];
 
 const BASE_CLICK = 1;         // yükseltmesiz tıklama başına altın
